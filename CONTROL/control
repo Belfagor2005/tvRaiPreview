@@ -1,0 +1,11 @@
+Package: enigma2-plugin-extensions-tvraipreview
+Version: 1.0
+Section: extra
+OE: 2.0
+License: *
+Priority: optional
+Architecture: all
+Maintainer: @lululla
+Description: tivustream rai preview addons
+Source: tivustream
+Homepage: www.tivustream.com

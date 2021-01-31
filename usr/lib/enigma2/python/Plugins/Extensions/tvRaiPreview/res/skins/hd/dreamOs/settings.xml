@@ -1,0 +1,27 @@
+<screen name="MainSetting" position="0,0" size="1280,720" title="..::tvRaiPreview::.." backgroundColor="transparent" flags="wfNoBorder">
+  <widget name="title" position="133,16" size="573,66" font="Regular;24" halign="left" valign="center" foregroundColor="#002a79b8" backgroundColor="black" transparent="1" zPosition="5" />
+  <!-- eLabel  position="6,33"   size="620,1"     backgroundColor="grey" /-->
+  <ePixmap position="146,86" size="686,5" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/sep.png" zPosition="5" />
+  <eLabel position="76,0" size="826,720" backgroundColor="#60000000" zPosition="1" />
+  <ePixmap position="0,0" size="886,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/main2hd.png" zPosition="2" />
+<!--   <ePixmap position="126,0" size="720,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/fulltop.png" scale="stretch" zPosition="3" />
+  <ePixmap position="126,0" size="2,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/b-left.png" zPosition="5" />
+  <ePixmap position="844,0" size="54,720" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/sh-right.png" zPosition="5" /> -->
+  <!-- Menu List -->
+  <widget name="text" position="146,103" size="686,398" scrollbarMode="showOnDemand" transparent="1" zPosition="5" foregroundColor="#00a0a0a0" foregroundColorSelected="#ffffff" backgroundColor="#20000000" backgroundColorSelected="#0b2049" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/sliderb.png" />
+  <widget name="info" position="146,502" size="686,36" font="Regular;20" halign="center" foregroundColor="yellow" backgroundColor="#20000000" transparent="1" zPosition="5" />
+<!--   <widget name="pth" position="146,537" size="686,35" font="Regular;20" halign="center" foregroundColor="yellow" backgroundColor="#20000000" transparent="1" zPosition="5" />
+  <widget name="pform" position="146,574" size="686,30" font="Regular;20" halign="center" foregroundColor="yellow" backgroundColor="#20000000" transparent="1" zPosition="5" />
+  <widget name="progress" position="390,643" size="200,33" foregroundColor="#2a70a4" backgroundColor="#1a000000" transparent="1" zPosition="5" />
+  <widget source="progresstext" render="Label" font="Regular;13" position="390,643" size="200,33" backgroundColor="#202020" transparent="1" halign="center" zPosition="6" /> -->
+  <!-- Colors 1220 -->
+  <ePixmap position="146,606" size="686,5" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/sep.png" zPosition="5" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/key_red.png" position="146,630" size="20,20" alphatest="on" zPosition="5" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/key_green.png" position="146,670" size="20,20" alphatest="on" zPosition="5" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/key_yellow.png" position="813,630" size="20,20" alphatest="on" zPosition="5" />
+  <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/key_blue.png" position="813,670" size="20,20" alphatest="on" zPosition="5" />
+  <widget name="key_red" position="180,626" size="200,26" font="Regular;20" halign="left" valign="center" backgroundColor="#20000000" zPosition="5" transparent="1" />
+  <widget name="key_green" position="180,666" size="200,26" font="Regular;20" halign="left" valign="center" backgroundColor="#20000000" zPosition="5" transparent="1" />
+  <widget name="key_yellow" position="603,626" size="200,26" font="Regular;20" halign="right" valign="center" backgroundColor="#20000000" zPosition="5" transparent="1" />
+  <widget name="key_blue" position="603,666" size="200,26" font="Regular;20" halign="right" valign="center" backgroundColor="#20000000" zPosition="5" transparent="1" />
+</screen>
