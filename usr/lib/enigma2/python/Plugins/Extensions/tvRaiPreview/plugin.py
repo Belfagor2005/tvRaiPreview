@@ -274,7 +274,8 @@ class Rai(Screen):
         self.urls.append("http://www.tgr.rai.it/dl/rai24/tgr/rubriche/mhp/list.xml")  
         self.pics.append("http://www.tgr.rai.it/dl/tgr/mhp/immagini/rubriche.png")         
         showlist(self.names, self['text'])
-
+        self['info'].setText(_('Please select ...'))
+    
     def okRun(self):
         selection = str(self['text'].getCurrent())
         idx = self["text"].getSelectionIndex()
