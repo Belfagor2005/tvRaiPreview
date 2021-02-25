@@ -143,7 +143,7 @@ def getUrl(url):
 
 DESKHEIGHT = getDesktop(0).size().height()
 currversion = '1.0'
-title_plug = '..:: tvRaiPreview V. %s ::..' % currversion
+title_plug = '..:: TiVu Rai Preview V. %s ::..' % currversion
 plugin_path = os.path.dirname(sys.modules[__name__].__file__)
 skin_path = plugin_path
 pluglogo = plugin_path + '/res/pics/logo.png'
@@ -152,7 +152,9 @@ pngl = plugin_path + '/res/pics/plugin.png'
 pngs = plugin_path + '/res/pics/setting.png'
 HD = getDesktop(0).size()
 vid = plugin_path + '/vid.txt'
-
+desc_plugin = ('..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion)
+name_plugin = ('TiVuRaiPreview')
+    
 if HD.width() > 1280:
     if isDreamOS:
         skin_path = plugin_path + '/res/skins/fhd/dreamOs/'
@@ -204,7 +206,7 @@ def OneSetListEntry(name):
         res.append(MultiContentEntryText(pos = (60, 0), size = (1200, 50), font = 0, text = name, color = 0xa6d1fe, flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     else:
         res.append(MultiContentEntryPixmapAlphaTest(pos = (10, 6), size = (34, 25), png = loadPNG(pngx)))
-        res.append(MultiContentEntryText(pos = (60, 5), size = (1000, 50), font = 0, text = name, color = 0xa6d1fe, flags = RT_HALIGN_LEFT))
+        res.append(MultiContentEntryText(pos = (60, 2), size = (1000, 50), font = 0, text = name, color = 0xa6d1fe, flags = RT_HALIGN_LEFT))
     return res
 
 def showlist(data, list):
@@ -217,9 +219,9 @@ def showlist(data, list):
         list.setList(plist)
 
 '''
-rai start
+tgrRai start
 '''
-class Rai(Screen):
+class tgrRai(Screen):
 
     def __init__(self, session):
         self.session = session
@@ -283,9 +285,9 @@ class Rai(Screen):
         url = self.urls[idx]
         print('name : ', name)
         print('url:  ', url)
-        self.session.open(tvRai2, name, url)
+        self.session.open(tgrRai2, name, url)
 
-class tvRai2(Screen):
+class tgrRai2(Screen):
 
     def __init__(self, session, name, url):
         self.session = session
@@ -372,12 +374,12 @@ class tvRai2(Screen):
         print('url:  ', url)
         
         if 'relinker' in url:
-            self.session.open(Playstream2, name, url)
+            self.session.open(Playstream4, name, url)
         else:
-            self.session.open(tvRai3, name, url)
+            self.session.open(tgrRai3, name, url)
 
             
-class tvRai3(Screen):
+class tgrRai3(Screen):
 
     def __init__(self, session, name, url):
         self.session = session
@@ -467,7 +469,7 @@ class tvRai3(Screen):
         print('url:  ', url)
         try:
             print("In playVideo2 url =", url)
-            self.session.open(Playstream2, name, url)
+            self.session.open(Playstream4, name, url)
         except:
             self['info'].setText(_('Nothing ...'))
             pass
@@ -475,7 +477,7 @@ class tvRai3(Screen):
 '''
 rai end
 '''
-class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarShowHide):
+class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarShowHide):
 
     def __init__(self, session, name, url):
         Screen.__init__(self, session)
@@ -552,7 +554,7 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
 
 def main(session, **kwargs):
     if checkInternet():
-        session.open(Rai)
+        session.open(tgrRai)
     else:
         session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
 
@@ -566,8 +568,6 @@ def Plugins(**kwargs):
     ico_path = 'logo.png'
     if not isDreamOS:
         ico_path = plugin_path + '/res/pics/logo.png'
-    desc_plugin = (_('..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion))
-    name_plugin = (_('TiVuRaiPreview'))
     main_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_MENU, fnc = StartSetup, needsRestart = True)
     extensions_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main, needsRestart = True)
     result = [PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_PLUGINMENU, icon = ico_path, fnc = main)]
