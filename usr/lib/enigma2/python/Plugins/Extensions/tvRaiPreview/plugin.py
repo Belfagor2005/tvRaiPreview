@@ -143,7 +143,7 @@ def getUrl(url):
 
 DESKHEIGHT = getDesktop(0).size().height()
 currversion = '1.0'
-title_plug = '..:: TiVu Rai Preview V. %s ::..' % currversion
+
 plugin_path = os.path.dirname(sys.modules[__name__].__file__)
 skin_path = plugin_path
 pluglogo = plugin_path + '/res/pics/logo.png'
@@ -152,8 +152,8 @@ pngl = plugin_path + '/res/pics/plugin.png'
 pngs = plugin_path + '/res/pics/setting.png'
 HD = getDesktop(0).size()
 vid = plugin_path + '/vid.txt'
-desc_plugin = ('..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion)
-name_plugin = ('TiVuRaiPreview')
+desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion)
+name_plugin = 'TiVuRaiPreview'
     
 if HD.width() > 1280:
     if isDreamOS:
@@ -230,7 +230,7 @@ class tgrRai(Screen):
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
-        self.setTitle(title_plug)
+        self.setTitle(name_plugin)
         self.list = []
         self['text'] = OneSetList([])
         self['info'] = Label(_('Getting the list, please wait ...'))
@@ -246,7 +246,7 @@ class tgrRai(Screen):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
-        self['title'] = Label(title_plug)
+        self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
          'green': self.okRun,
          'red': self.close,
@@ -296,7 +296,7 @@ class tgrRai2(Screen):
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
-        self.setTitle(title_plug)
+        self.setTitle(name_plugin)
         self.list = []
         self.name = name
         self.url = url
@@ -314,7 +314,7 @@ class tgrRai2(Screen):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
-        self['title'] = Label(title_plug)
+        self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
          'green': self.okRun,
          'red': self.close,
@@ -388,7 +388,7 @@ class tgrRai3(Screen):
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
-        self.setTitle(title_plug)
+        self.setTitle(name_plugin)
         self.list = []
         self.name = name
         self.url = url
@@ -406,7 +406,7 @@ class tgrRai3(Screen):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
-        self['title'] = Label(title_plug)
+        self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
          'green': self.okRun,
          'red': self.close,
