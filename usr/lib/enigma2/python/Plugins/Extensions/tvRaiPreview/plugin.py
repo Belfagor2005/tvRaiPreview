@@ -674,7 +674,7 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
          'InfobarActions',
          'InfobarSeekActions'], {'leavePlayer': self.cancel,
          'epg': self.showIMDB,
-         'info': self.showinfo,
+         'info': self.cicleStreamType,
          'tv': self.cicleStreamType,
          'stop': self.leavePlayer,
          'cancel': self.cancel,
@@ -691,7 +691,8 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         self.name = decodeHtml(name)
         self.state = self.STATE_PLAYING                                 
         self.srefOld = self.session.nav.getCurrentlyPlayingServiceReference()
-        # self.onLayoutFinish.append(self.openTest)
+        servicetype = "4097"
+        # self.onLayoutFinish.append(self.openTest, servicetype, url)
         self.onLayoutFinish.append(self.cicleStreamType)
         self.onClose.append(self.cancel)
         return
@@ -767,14 +768,14 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
             HHHHH = text
             self.session.open(IMDB, HHHHH)
         else:
-            text_clear = self.name
-            self.session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)  
+            # text_clear = self.name
+            # self.session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)  
+            self.showinfo()
             
     def openTest(self, servicetype, url):
-        url = url
         if url.endswith('m3u8'):
-            servicetype = '4097'        
-        ref = servicetype +':0:1:0:0:0:0:0:0:0:' + str(url)
+            servicetype = "4097"
+        ref = str(servicetype) +':0:1:0:0:0:0:0:0:0:' + str(url)
         print('final reference :   ', ref)
         sref = eServiceReference(ref)
         sref.setName(self.name)
@@ -783,12 +784,9 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         
     def cicleStreamType(self):
         from itertools import cycle, islice
-        self.servicetype ='4097'#str(config.plugins.exodus.services.value)# 
+        self.servicetype ='4097'
         print('servicetype1: ', self.servicetype)
         url = str(self.url)
-        # if url.endswith('m3u8'):
-            # self.servicetype = '4097'
-        
         currentindex = 0
         streamtypelist = ["4097"]
         if os.path.exists("/usr/bin/gstplayer"):
