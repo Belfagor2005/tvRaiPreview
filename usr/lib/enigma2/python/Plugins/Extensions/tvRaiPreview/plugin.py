@@ -8,7 +8,8 @@
 *       Skin by MMark                  *
 ****************************************
 '''
-# from __future__ import print_function
+from __future__ import print_function
+from Components.AVSwitch import AVSwitch
 from Components.ActionMap import ActionMap, NumberActionMap
 from Components.Button import Button
 from Components.Label import Label
@@ -20,15 +21,15 @@ from Components.PluginList import *
 from Components.ScrollLabel import ScrollLabel
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
-from Components.AVSwitch import AVSwitch                                        
+from Components.AVSwitch import AVSwitch
 from Plugins.Plugin import PluginDescriptor
 from Screens.Console import Console
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.InfoBarGenerics import *
 from Screens.InfoBar import MoviePlayer, InfoBar
-from Screens.InfoBarGenerics import InfoBarAudioSelection, InfoBarNotifications 
-from Screens.InfoBarGenerics import InfoBarShowHide, InfoBarMenu, InfoBarSeek                                                                                 
+from Screens.InfoBarGenerics import InfoBarAudioSelection, InfoBarNotifications
+from Screens.InfoBarGenerics import InfoBarShowHide, InfoBarMenu, InfoBarSeek
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Tools.Directories import *
 from Tools.Directories import resolveFilename, SCOPE_LANGUAGE, fileExists
@@ -46,7 +47,7 @@ import shutil
 import ssl
 import glob
 import json
-import six          
+import six
 from Tools.LoadPixmap import LoadPixmap
 global isDreamOS, vid
 global skin_path, pluglogo, pngx, pngl, pngs
@@ -117,14 +118,13 @@ def checkUrl(url):
     try:
         response = checkStr(urlopen(url, None, 5))
         response.close()
+        return True                   
     except HTTPError:
         return False
     except URLError:
         return False
     except socket.timeout:
         return False
-    else:
-        return True
 
 def getUrl(url):
     link = []
@@ -297,7 +297,7 @@ class tgrRai(Screen):
             self.session.open(tgrRai2, name, url)
         else:
             self.session.open(tvRai2, name, url)
-
+                                   
 class tgrRai2(Screen):
     def __init__(self, session, name, url):
         self.session = session
@@ -333,12 +333,12 @@ class tgrRai2(Screen):
     def _gotPageLoad(self):
         self.names = []
         self.urls = []
-        self.pics = []  
-        name = self.name        
+        self.pics = []
+        name = self.name
         url = self.url
         content = getUrl(url)
         if PY3:
-            content = six.ensure_str(content)  
+            content = six.ensure_str(content)
         content = content.replace("\r", "").replace("\t", "").replace("\n", "")
         pic = " "
         try:
@@ -363,7 +363,7 @@ class tgrRai2(Screen):
                 # pic = image
                 url = checkStr(url1)
                 name = checkStr(name)
-                
+
                 self.names.append(name)
                 self.urls.append(url)
                 # self.pics.append(pic)
@@ -399,6 +399,7 @@ class tgrRai3(Screen):
         self['key_red'] = Button(_('Back'))
         self['key_yellow'] = Button(_(''))
         self["key_blue"] = Button(_(''))
+                                                     
         self['key_yellow'].hide()
         self['key_blue'].hide()
         self.timer = eTimer()
@@ -416,8 +417,8 @@ class tgrRai3(Screen):
     def _gotPageLoad(self):
         self.names = []
         self.urls = []
-        self.pics = [] 
-        name = self.name        
+        self.pics = []
+        name = self.name
         url = self.url
         content = getUrl(url)
         if PY3:
@@ -446,10 +447,10 @@ class tgrRai3(Screen):
                 else:
                     url1 = "http://www.tgr.rai.it" + url
                 # pic = image
-                
+
                 url = checkStr(url1)
                 name = checkStr(name)
-                
+
                 self.names.append(name)
                 self.urls.append(url)
                 # self.pics.append(pic)
@@ -584,7 +585,7 @@ class TvInfoBarShowHide():
         self.hideTimer.start(5000, True)
         try:
             self.hideTimer_conn = self.hideTimer.timeout.connect(self.doTimerHide)
-            
+
         except:
             self.hideTimer.callback.append(self.doTimerHide)
         self.onShow.append(self.__onShow)
@@ -598,7 +599,7 @@ class TvInfoBarShowHide():
     def __onShow(self):
         self.__state = self.STATE_SHOWN
         self.startHideTimer()
-                
+
     def startHideTimer(self):
         if self.__state == self.STATE_SHOWN and not self.__locked:
             idx = config.usage.infobar_timeout.index
@@ -607,7 +608,7 @@ class TvInfoBarShowHide():
 
     def __onHide(self):
         self.__state = self.STATE_HIDDEN
-                 
+
     def doShow(self):
         self.show()
         self.startHideTimer()
@@ -637,30 +638,32 @@ class TvInfoBarShowHide():
 
     def debug(obj, text = ""):
         print(text + " %s\n" % obj)
-                                           
+
 class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarAudioSelection, TvInfoBarShowHide): #,InfoBarSubtitleSupport
     STATE_IDLE = 0
     STATE_PLAYING = 1
     STATE_PAUSED = 2
     ENABLE_RESUME_SUPPORT = True
     ALLOW_SUSPEND = True
-    screen_timeout = 5000                          
+    screen_timeout = 5000
 
     def __init__(self, session, name, url):
         Screen.__init__(self, session)
+        self.session = session                              
         self.skinName = 'MoviePlayer'
         title = 'Play'
-        # InfoBarBase.__init__(self)
-        # InfoBarShowHide.__init__(self)
+
         InfoBarMenu.__init__(self)
         InfoBarNotifications.__init__(self)
         InfoBarBase.__init__(self, steal_current_service=True)
         TvInfoBarShowHide.__init__(self)
         InfoBarAudioSelection.__init__(self)
+        InfoBarSeek.__init__(self)                                  
+        # InfoBarSubtitleSupport.__init__(self)                                               
         try:
             self.init_aspect = int(self.getAspect())
         except:
-            self.init_aspect = 0     
+            self.init_aspect = 0
         self.new_aspect = self.init_aspect
         self['actions'] = ActionMap(['WizardActions',
          'MoviePlayerActions',
@@ -680,23 +683,18 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
          'cancel': self.cancel,
          'back': self.cancel}, -1)
         self.allowPiP = False
-        InfoBarSeek.__init__(self, actionmap='InfobarSeekActions')                      
         self.service = None
-        service = None                      
-        # InfoBarSeek.__init__(self, actionmap='MediaPlayerSeekActions')
-        url = url.replace(':', '%3a')
-        url = url.replace(' ','%20')
-        self.url = url
+        service = None
+        self.url = url.replace(':', '%3a').replace(' ','%20')
+        self.icount = 0                       
         self.pcip = 'None'
         self.name = decodeHtml(name)
-        self.state = self.STATE_PLAYING                                 
+        self.state = self.STATE_PLAYING
         self.srefOld = self.session.nav.getCurrentlyPlayingServiceReference()
-        servicetype = "4097"
-        # self.onLayoutFinish.append(self.openTest, servicetype, url)
         self.onLayoutFinish.append(self.cicleStreamType)
         self.onClose.append(self.cancel)
         return
-        
+
     def getAspect(self):
         return AVSwitch().getAspectRatioSetting()
 
@@ -729,8 +727,8 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         if temp > 6:
             temp = 0
         self.new_aspect = temp
-        self.setAspect(temp)        
-        
+        self.setAspect(temp)
+
     def showinfo(self):
         sTitle = ''
         sServiceref = ''
@@ -752,9 +750,8 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
             self.mbox = self.session.open(MessageBox, message, MessageBox.TYPE_INFO)
         except:
             pass
-
         return
-        
+
     def showIMDB(self):
         if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/TMBD/plugin.pyo"):
             from Plugins.Extensions.TMBD.plugin import TMBD
@@ -769,9 +766,9 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
             self.session.open(IMDB, HHHHH)
         else:
             # text_clear = self.name
-            # self.session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)  
+            # self.session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)
             self.showinfo()
-            
+
     def openTest(self, servicetype, url):
         if url.endswith('m3u8'):
             servicetype = "4097"
@@ -781,7 +778,7 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         sref.setName(self.name)
         self.session.nav.stopService()
         self.session.nav.playService(sref)
-        
+
     def cicleStreamType(self):
         from itertools import cycle, islice
         self.servicetype ='4097'
@@ -805,8 +802,8 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         self.openTest(self.servicetype, url)
 
     def keyNumberGlobal(self, number):
-        self['text'].number(number)     
-        
+        self['text'].number(number)
+
     def cancel(self):
         if os.path.exists('/tmp/hls.avi'):
             os.remove('/tmp/hls.avi')
@@ -822,6 +819,11 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
                 pass
         self.close()
 
+    def keyLeft(self):
+        self['text'].left()
+
+    def keyRight(self):
+        self['text'].right()                      
     def showVideoInfo(self):
         if self.shown:
             self.hideInfobar()
@@ -829,31 +831,11 @@ class Playstream4(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
             self.infoCallback()
         return
 
+    def showAfterSeek(self):
+        if isinstance(self, TvInfoBarShowHide):
+            self.doShow()
     def leavePlayer(self):
-        self.close() 
-
-def main(session, **kwargs):
-    if checkInternet():
-        session.open(tgrRai)
-    else:
-        session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
-
-def StartSetup(menuid, **kwargs):
-    if menuid == 'mainmenu':
-        return [(_('tvRaiPreview'), main, 'tvRaiPreview', 15)]
-    else:
-        return []
-
-def Plugins(**kwargs):
-    ico_path = 'logo.png'
-    if not isDreamOS:
-        ico_path = plugin_path + '/res/pics/logo.png'
-    main_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_MENU, fnc = StartSetup, needsRestart = True)
-    extensions_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main, needsRestart = True)
-    result = [PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_PLUGINMENU, icon = ico_path, fnc = main)]
-    result.append(extensions_menu)
-    result.append(main_menu)
-    return result
+        self.close()
 
 def decodeUrl(text):
 	text = text.replace('%20',' ')
@@ -885,27 +867,27 @@ def decodeHtml(text):
 	text = text.replace('&Auml;','Ä')
 	text = text.replace('\u00c4','Ä')
 	text = text.replace('&#196;','Ä')
-	
+
 	text = text.replace('&ouml;','ö')
 	text = text.replace('\u00f6','ö')
 	text = text.replace('&#246;','ö')
-	
+
 	text = text.replace('&ouml;','Ö')
 	text = text.replace('\u00d6','Ö')
 	text = text.replace('&#214;','Ö')
-	
+
 	text = text.replace('&uuml;','ü')
 	text = text.replace('\u00fc','ü')
 	text = text.replace('&#252;','ü')
-	
+
 	text = text.replace('&Uuml;','Ü')
 	text = text.replace('\u00dc','Ü')
 	text = text.replace('&#220;','Ü')
-	
+
 	text = text.replace('&szlig;','ß')
 	text = text.replace('\u00df','ß')
 	text = text.replace('&#223;','ß')
-	
+
 	text = text.replace('&amp;','&')
 	text = text.replace('&quot;','\"')
 	text = text.replace('&quot_','\"')
@@ -966,4 +948,89 @@ def decodeHtml(text):
 	text = text.replace('&commmat;',' ')
 	text = text.replace('&#58;',':')
 
-	return text	
+	return text
+
+def charRemove(text):
+    char = ["1080p",
+     "2018",
+     "2019",
+     "2020",
+     "2021",
+     "480p",
+     "4K",
+     "720p",
+     "ANIMAZIONE",
+     "APR",
+     "AVVENTURA",
+     "BIOGRAFICO",
+     "BDRip",
+     "BluRay",
+     "CINEMA",
+     "COMMEDIA",
+     "DOCUMENTARIO",
+     "DRAMMATICO",
+     "FANTASCIENZA",
+     "FANTASY",
+     "FEB",
+     "GEN",
+     "GIU",
+     "HDCAM",
+     "HDTC",
+     "HDTS",
+     "LD",
+     "MAFIA",
+     "MAG",
+     "MARVEL",
+     "MD",
+     "ORROR",
+     "NEW_AUDIO",
+     "POLIZ",
+     "R3",
+     "R6",
+     "SD",
+     "SENTIMENTALE",
+     "TC",
+     "TEEN",
+     "TELECINE",
+     "TELESYNC",
+     "THRILLER",
+     "Uncensored",
+     "V2",
+     "WEBDL",
+     "WEBRip",
+     "WEB",
+     "WESTERN",
+     "-",
+     "_",
+     ".",
+     "+",
+     "[",
+     "]"]
+
+    myreplace = text
+    for ch in char:
+        myreplace = myreplace.replace(ch, "").replace("  ", " ").replace("       ", " ").strip()
+    return myreplace                     
+
+def main(session, **kwargs):
+    if checkInternet():
+        session.open(tgrRai)
+    else:
+        session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
+
+def StartSetup(menuid, **kwargs):
+    if menuid == 'mainmenu':
+        return [(_('tvRaiPreview'), main, 'tvRaiPreview', 15)]
+    else:
+        return []
+
+def Plugins(**kwargs):
+    ico_path = 'logo.png'
+    if not isDreamOS:
+        ico_path = plugin_path + '/res/pics/logo.png'
+    main_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_MENU, fnc = StartSetup, needsRestart = True)
+    extensions_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main, needsRestart = True)
+    result = [PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_PLUGINMENU, icon = ico_path, fnc = main)]
+    result.append(extensions_menu)
+    result.append(main_menu)
+    return result
