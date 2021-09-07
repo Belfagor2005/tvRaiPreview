@@ -49,7 +49,7 @@ import glob
 import json
 import six
 from Tools.LoadPixmap import LoadPixmap
-global isDreamOS, vid
+global vid
 global skin_path, pluglogo, pngx, pngl, pngs
 from sys import version_info
 PY3 = sys.version_info.major >= 3
@@ -63,12 +63,6 @@ from six.moves.urllib.parse import urlencode
 from six.moves.urllib.request import urlretrieve
 # import six.moves.urllib.request
 
-isDreamOS = False
-try:
-    from enigma import eMediaDatabase
-    isDreamOS = True
-except:
-    isDreamOS = False
 if sys.version_info >= (2, 7, 9):
     try:
         import ssl
@@ -103,16 +97,11 @@ def checkStr(txt):
 
 def checkInternet():
     try:
-        response = checkStr(urlopen("http://google.com", None, 5))
-        response.close()
-    except HTTPError:
-        return False
-    except URLError:
-        return False
-    except socket.timeout:
-        return False
-    else:
+        socket.setdefaulttimeout(0.5)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
         return True
+    except:
+        return False
 
 def checkUrl(url):
     try:
@@ -151,12 +140,12 @@ desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion
 name_plugin = 'TiVuRaiPreview'
 
 if HD.width() > 1280:
-    if isDreamOS:
+    if os.path.exists('/var/lib/dpkg/status'):
         skin_path = plugin_path + '/res/skins/fhd/dreamOs/'
     else:
         skin_path = plugin_path + '/res/skins/fhd/'
 else:
-    if isDreamOS:
+    if os.path.exists('/var/lib/dpkg/status'):
         skin_path = plugin_path + '/res/skins/hd/dreamOs/'
     else:
         skin_path = plugin_path + '/res/skins/hd/'
@@ -233,7 +222,7 @@ class tgrRai(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if isDreamOS:
+        if os.path.exists('/var/lib/dpkg/status'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -320,7 +309,7 @@ class tgrRai2(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if isDreamOS:
+        if os.path.exists('/var/lib/dpkg/status'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -404,7 +393,7 @@ class tgrRai3(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if isDreamOS:
+        if os.path.exists('/var/lib/dpkg/status'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -494,7 +483,7 @@ class tvRai2(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if isDreamOS:
+        if os.path.exists('/var/lib/dpkg/status'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -1026,7 +1015,7 @@ def StartSetup(menuid, **kwargs):
 
 def Plugins(**kwargs):
     ico_path = 'logo.png'
-    if not isDreamOS:
+    if not os.path.exists('/var/lib/dpkg/status'):
         ico_path = plugin_path + '/res/pics/logo.png'
     main_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_MENU, fnc = StartSetup, needsRestart = True)
     extensions_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main, needsRestart = True)
