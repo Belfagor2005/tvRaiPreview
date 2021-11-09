@@ -537,7 +537,7 @@ class tvRai2(Screen):
         print('urlok:  ', url)
         try:
             # print("In playVideo2 url =", url)
-            from Plugins.Extensions.tvDream.youtube_dl import YoutubeDL
+            from Plugins.Extensions.tvRaiPreview.res.youtube_dl import YoutubeDL
             ydl_opts = {'format': 'best'}
             '''
             ydl_opts = {'format': 'bestaudio/best'}
