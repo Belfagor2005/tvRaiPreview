@@ -123,15 +123,15 @@ if isFHD():
         skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/dreamOs/".format('tvRaiPreview'))
         # skin_path = res_plugin_path + 'skins/fhd/dreamOs/'
     else:
-        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))
+        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))    
         # skin_path = res_plugin_path + 'skins/fhd/'
 else:
     if DreamOS():
-        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/dreamOs/".format('tvRaiPreview'))
+        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/dreamOs/".format('tvRaiPreview'))    
         # skin_path = res_plugin_path + 'skins/hd/dreamOs/'
     else:
         # skin_path = res_plugin_path + 'skins/hd/'
-        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))
+        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))           
 
 class SetList(MenuList):
     def __init__(self, list):
