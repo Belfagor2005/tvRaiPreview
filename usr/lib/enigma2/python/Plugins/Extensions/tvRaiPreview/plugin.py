@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 '''
 ****************************************
-*        coded by Lululla & PCD        *
-*             skin by MMark            *
-*             17/07/2021              *
+*        coded by Lululla              *
+*                                      *
+*             11/12/2021               *
 *       Skin by MMark                  *
 ****************************************
+Info http://t.me/tivustream
 '''
 from __future__ import print_function
 from Components.AVSwitch import AVSwitch
 from Components.ActionMap import ActionMap, NumberActionMap
 from Components.Button import Button
-from Components.config import *                                                  
 from Components.Label import Label
 from Components.MenuList import MenuList
 from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest
@@ -23,22 +23,28 @@ from Components.ScrollLabel import ScrollLabel
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
-from Components.AVSwitch import AVSwitch
+from Components.config import *
 from Plugins.Plugin import PluginDescriptor
 from Screens.Console import Console
+from Screens.InfoBar import InfoBar
+from Screens.InfoBar import MoviePlayer
+from Screens.InfoBarGenerics import *
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
-from Screens.InfoBarGenerics import *
-from Screens.InfoBar import MoviePlayer, InfoBar
 from Screens.InfoBarGenerics import InfoBarMenu, InfoBarSeek, InfoBarAudioSelection, InfoBarMoviePlayerSummarySupport, \
     InfoBarSubtitleSupport, InfoBarSummarySupport, InfoBarServiceErrorPopupSupport, InfoBarNotifications
-from Tools.Directories import resolveFilename, SCOPE_LANGUAGE, fileExists
+from ServiceReference import ServiceReference
+from Tools.Directories import SCOPE_PLUGINS
+from Tools.Directories import pathExists, resolveFilename, fileExists, copyfile
 from enigma import *
-from enigma import RT_HALIGN_LEFT, getDesktop, RT_HALIGN_RIGHT, RT_HALIGN_CENTER
+from enigma import RT_HALIGN_CENTER, RT_VALIGN_CENTER
+from enigma import RT_HALIGN_LEFT, RT_HALIGN_RIGHT
 from enigma import eTimer, eListboxPythonMultiContent, eListbox, eConsoleAppContainer, gFont
+from enigma import eServiceReference, iPlayableService
 from os import path, listdir, remove, mkdir, chmod
 from twisted.web.client import downloadPage, getPage
 from xml.dom import Node, minidom
+from os.path import splitext
 import base64
 import os
 import re
@@ -59,7 +65,7 @@ try:
     from Plugins.Extensions.tvRaiPreview.Utils import *
 except:
     from . import Utils
-    
+
 if sys.version_info >= (2, 7, 9):
     try:
         import ssl
@@ -88,7 +94,7 @@ def checkUrl(url):
     try:
         response = checkStr(urlopen(url, None, 5))
         response.close()
-        return True                   
+        return True
     except HTTPError:
         return False
     except URLError:
@@ -96,27 +102,36 @@ def checkUrl(url):
     except socket.timeout:
         return False
 
-currversion = '1.1'
+currversion = '1.2'
 plugin_path = os.path.dirname(sys.modules[__name__].__file__)
 skin_path = plugin_path
-pluglogo = plugin_path + '/res/pics/logo.png'
-pngx = plugin_path + '/res/pics/plugins.png'
-pngl = plugin_path + '/res/pics/plugin.png'
-pngs = plugin_path + '/res/pics/setting.png'
-vid = plugin_path + '/vid.txt'
+pluglogo = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('logo.png'))
+pngx = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugins.png'))
+pngl = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugin.png'))
+pngs = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('setting.png'))
+
+# res_plugin_path = plugin_path + '/res/'
+# pluglogo = res_plugin_path + 'pics/logo.png'
+# pngx = res_plugin_path + 'pics/plugins.png'
+# pngl = res_plugin_path + 'pics/plugin.png'
+# pngs = res_plugin_path + 'pics/setting.png'
 desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion
-name_plugin = 'TiVuRaiPreview'
+name_plugin = 'TiVu Rai Preview'
 
 if isFHD():
-    if os.path.exists('/var/lib/dpkg/status'):
-        skin_path = plugin_path + '/res/skins/fhd/dreamOs/'
+    if DreamOS():
+        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/dreamOs/".format('tvRaiPreview'))
+        # skin_path = res_plugin_path + 'skins/fhd/dreamOs/'
     else:
-        skin_path = plugin_path + '/res/skins/fhd/'
+        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))
+        # skin_path = res_plugin_path + 'skins/fhd/'
 else:
-    if os.path.exists('/var/lib/dpkg/status'):
-        skin_path = plugin_path + '/res/skins/hd/dreamOs/'
+    if DreamOS():
+        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/dreamOs/".format('tvRaiPreview'))
+        # skin_path = res_plugin_path + 'skins/hd/dreamOs/'
     else:
-        skin_path = plugin_path + '/res/skins/hd/'
+        # skin_path = res_plugin_path + 'skins/hd/'
+        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))
 
 class SetList(MenuList):
     def __init__(self, list):
@@ -133,29 +148,21 @@ class SetList(MenuList):
         self.l.setFont(9, gFont('Regular', 40))
         if isFHD():
             self.l.setItemHeight(50)
-        else:
-            self.l.setItemHeight(50)
-
-class OneSetList(MenuList):
-    def __init__(self, list):
-        MenuList.__init__(self, list, True, eListboxPythonMultiContent)
-        if isFHD():
-            self.l.setItemHeight(50)
             textfont = int(34)
             self.l.setFont(0, gFont('Regular', textfont))
         else:
             self.l.setItemHeight(50)
-            textfont = int(22)
+            textfont = int(24)
             self.l.setFont(0, gFont('Regular', textfont))
 
 def OneSetListEntry(name):
     res = [name]
     if isFHD():
-        res.append(MultiContentEntryPixmapAlphaTest(pos = (10, 12), size = (34, 25), png = loadPNG(pngx)))
-        res.append(MultiContentEntryText(pos = (60, 0), size = (1200, 50), font = 0, text = name, color = 0xa6d1fe, flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+        res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
+        res.append(MultiContentEntryText(pos=(60, 0), size=(1900, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     else:
-        res.append(MultiContentEntryPixmapAlphaTest(pos = (10, 6), size = (34, 25), png = loadPNG(pngx)))
-        res.append(MultiContentEntryText(pos = (60, 2), size = (1000, 50), font = 0, text = name, color = 0xa6d1fe, flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER)))
+        res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 6), size=(34, 25), png=loadPNG(pngx)))
+        res.append(MultiContentEntryText(pos=(60, 0), size=(1000, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     return res
 
 def showlist(data, list):
@@ -180,8 +187,8 @@ class tgrRai(Screen):
         Screen.__init__(self, session)
         self.setTitle(name_plugin)
         self.list = []
-        self['text'] = OneSetList([])
-        self['info'] = Label(_('Getting the list, please wait ...'))
+        self['text'] = SetList([])
+        self['info'] = Label(_('Loading data... Please wait'))
         self['key_green'] = Button(_('Select'))
         self['key_red'] = Button(_('Back'))
         self['key_yellow'] = Button(_(''))
@@ -190,7 +197,7 @@ class tgrRai(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if os.path.exists('/var/lib/dpkg/status'):
+        if DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -254,7 +261,7 @@ class tgrRai(Screen):
             self.session.open(tgrRai2, name, url)
         else:
             self.session.open(tvRai2, name, url)
-                                   
+
 class tgrRai2(Screen):
     def __init__(self, session, name, url):
         self.session = session
@@ -267,8 +274,8 @@ class tgrRai2(Screen):
         self.list = []
         self.name = name
         self.url = url
-        self['text'] = OneSetList([])
-        self['info'] = Label(_('Getting the list, please wait ...'))
+        self['text'] = SetList([])
+        self['info'] = Label(_('Loading data... Please wait'))
         self['key_green'] = Button(_('Select'))
         self['key_red'] = Button(_('Back'))
         self['key_yellow'] = Button(_(''))
@@ -277,7 +284,7 @@ class tgrRai2(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if os.path.exists('/var/lib/dpkg/status'):
+        if DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -318,15 +325,16 @@ class tgrRai2(Screen):
                 else:
                     url1 = "http://www.tgr.rai.it" + url
                 # pic = image
-                url = checkStr(url1)
-                name = checkStr(name)
+                url = url1
+                name = decodeHtml(name)
 
                 self.names.append(name)
                 self.urls.append(url)
                 # self.pics.append(pic)
             self['info'].setText(_('Please select ...'))
             showlist(self.names, self['text'])
-        except:
+        except Exception as e:
+            print('error: ', e)
             pass
 
     def okRun(self):
@@ -350,18 +358,17 @@ class tgrRai3(Screen):
         self.list = []
         self.name = name
         self.url = url
-        self['text'] = OneSetList([])
-        self['info'] = Label(_('Getting the list, please wait ...'))
+        self['text'] = SetList([])
+        self['info'] = Label(_('Loading data... Please wait'))
         self['key_green'] = Button(_('Select'))
         self['key_red'] = Button(_('Back'))
         self['key_yellow'] = Button(_(''))
         self["key_blue"] = Button(_(''))
-                                                     
         self['key_yellow'].hide()
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if os.path.exists('/var/lib/dpkg/status'):
+        if DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -404,14 +411,15 @@ class tgrRai3(Screen):
                 else:
                     url1 = "http://www.tgr.rai.it" + url
                 # pic = image
-                url = checkStr(url1)
-                name = checkStr(name)
+                url = url1
+                name = decodeHtml(name)
                 self.names.append(name)
                 self.urls.append(url)
                 # self.pics.append(pic)
             self['info'].setText(_('Please select ...'))
             showlist(self.names, self['text'])
-        except:
+        except Exception as e:
+            print('error: ', e)
             pass
 
     def okRun(self):
@@ -434,8 +442,8 @@ class tvRai2(Screen):
         self.list = []
         self.name = name
         self.url = url
-        self['text'] = OneSetList([])
-        self['info'] = Label(_('Getting the list, please wait ...'))
+        self['text'] = SetList([])
+        self['info'] = Label(_('Loading data... Please wait'))
         self['key_green'] = Button(_('Play'))
         self['key_red'] = Button(_('Back'))
         self['key_yellow'] = Button(_(''))
@@ -444,7 +452,7 @@ class tvRai2(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if os.path.exists('/var/lib/dpkg/status'):
+        if DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -480,20 +488,10 @@ class tvRai2(Screen):
                 # url3 = checkStr(url3)
                 self.names.append(name)
                 self.urls.append(url3)
-            except:
-                continue
+            except Exception as e:
+                print('error: ', e)
         self['info'].setText(_('Please select ...'))
         showlist(self.names, self['text'])
-        
-    # def okRun(self):
-        # idx = self["text"].getSelectionIndex()
-        # name = self.names[idx]
-        # url = self.urls[idx]
-        # print('name : ', name)
-        # print('url:  ', url)
-        # # try:
-            # # print("In playVideo2 url =", url)
-        # self.session.open(tvRai3, name, url)
 
     def okRun(self):
         idx = self["text"].getSelectionIndex()
@@ -502,8 +500,10 @@ class tvRai2(Screen):
         print('nameok : ', name)
         print('urlok:  ', url)
         try:
-
-            from Plugins.Extensions.tvRaiPreview.res.youtube_dl import YoutubeDL
+            # try:
+            from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
+            # except:
+                # from youtube_dl.Youtube_DL import *
             ydl_opts = {'format': 'best'}
             '''
             ydl_opts = {'format': 'bestaudio/best'}
@@ -514,8 +514,7 @@ class tvRai2(Screen):
             print ("rai result =", result)
             url = result["url"]
             print ("rai final url =", url)
-            self.session.open(Playstream4, name, url)           
-
+            self.session.open(Playstream4, name, url)
         except Exception as e:
             print('error tvr4 e  ', e)
 
@@ -531,8 +530,8 @@ class tvRai3(Screen):
         self.list = []
         self.name = name
         self.url = url
-        self['text'] = OneSetList([])
-        self['info'] = Label(_('Getting the list, please wait ...'))
+        self['text'] = SetList([])
+        self['info'] = Label(_('Loading data... Please wait'))
         self['key_green'] = Button(_('Play'))
         self['key_red'] = Button(_('Back'))
         self['key_yellow'] = Button(_(''))
@@ -541,7 +540,7 @@ class tvRai3(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if os.path.exists('/var/lib/dpkg/status'):
+        if DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -551,58 +550,6 @@ class tvRai3(Screen):
          'red': self.close,
          'cancel': self.close}, -2)
 
-    # def _gotPageLoad(self):
-        # self.names = []
-        # self.urls = []
-        # url = self.url
-        # name = self.name
-        # content = getUrl(url)
-        # if PY3:
-            # content = six.ensure_str(content)
-        # try:
-            # if 'type="video">' in content:
-                # print('content10  Videos4: ', content)
-                # regexcat = '<label>(.*?)</label>.*?type="video">(.*?)</url>' #relinker
-                # # self["key_green"].setText('Play')
-
-            # elif 'type="list">' in content:
-                # print('content20 Videos4: ', content)
-                # regexcat = '<label>(.*?)</label>.*?type="list">(.*?)</url>'
-            # else:
-                # print('passsss')
-                # pass
-            # match = re.compile(regexcat, re.DOTALL).findall(content)
-            # print("showContent21 match Videos4=", match)
-            # for name, url in match:
-                # # print('name : ', name)
-                # # print('url : ', url)
-                # if url.startswith('http'):
-                    # url=url
-                # else:
-                    # url = "http://www.tgr.rai.it" + url
-                # # url = checkStr(url1)
-                # # name = checkStr(name)
-                # item = name + "###" + url
-                # print('ListM3u url-name Items sort: ', item)
-                # items.append(item)
-            # items.sort()
-            # for item in items:
-                # name = item.split('###')[0]
-                # url = item.split('###')[1]
-                # pic = " "
-                # print("getVideos5 name Videos4=", name)
-                # print("getVideos5 url Videos4=", url)
-                # name = decodeHtml(name)
-                # url3 = checkStr(url)
-                # self.names.append(name)
-                # self.urls.append(url3)
-
-            # self['info'].setText(_('Please select ...'))
-            # showlist(self.names, self['text'])
-        # except Exception as e:
-            # print(e)
-
-
     def _gotPageLoad(self):
         self.names = []
         self.urls = []
@@ -611,24 +558,24 @@ class tvRai3(Screen):
         content = getUrl(url)
         if PY3:
             content = six.ensure_str(content)
-        if content.find('behaviour="list">'):    
-            regexcat = '<label>(.*?)</label>.*?type="list">(.*?).html</url>' 
-            print('content2 : ', content)
-            match = re.compile(regexcat, re.DOTALL).findall(content)
-            print("showContent2 match =", match)
-            for name, url in match:
-                url = "http://www.tgr.rai.it/" + url + '.html'
-                pic = " "
-                print("getVideos5 name =", name)
-                print("getVideos5 url =", url)
-                name = decodeHtml(name)
-                # url3 = checkStr(url3)
-                # name = checkStr(name)
-                self.names.append(name)
-                self.urls.append(url3)
+        try:
+            if content.find('behaviour="list">'):
+                regexcat = '<label>(.*?)</label>.*?type="list">(.*?).html</url>'
+                print('content2 : ', content)
+                match = re.compile(regexcat, re.DOTALL).findall(content)
+                print("showContent2 match =", match)
+                for name, url in match:
+                    url = "http://www.tgr.rai.it/" + url + '.html'
+                    pic = " "
+                    print("getVideos5 name =", name)
+                    print("getVideos5 url =", url)
+                    name = decodeHtml(name)
+                    self.names.append(name)
+                    self.urls.append(url3)
+        except Exception as e:
+            print('error: ', e)
         self['info'].setText(_('Please select ...'))
         showlist(self.names, self['text'])
-
 
     def okRun(self):
         idx = self["text"].getSelectionIndex()
@@ -638,7 +585,10 @@ class tvRai3(Screen):
         print('urlok:  ', url)
         try:
             if 'relinker' in url:
-                from Plugins.Extensions.tvRaiPreview.res.youtube_dl import YoutubeDL
+                # try:
+                from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
+                # except:
+                    # from youtube_dl.Youtube_DL import *
                 ydl_opts = {'format': 'best'}
                 '''
                 ydl_opts = {'format': 'bestaudio/best'}
@@ -649,12 +599,12 @@ class tvRai3(Screen):
                 print ("rai result =", result)
                 url = result["url"]
                 print ("rai final url =", url)
-                self.session.open(Playstream4, name, url)           
+                self.session.open(Playstream4, name, url)
             else:
                 self.session.open(tvRai4, name, url)
         except Exception as e:
             print('error tvr3 ', e)
-                
+
 
 class tvRai4(Screen):
     def __init__(self, session, name, url):
@@ -668,8 +618,8 @@ class tvRai4(Screen):
         self.list = []
         self.name = name
         self.url = url
-        self['text'] = OneSetList([])
-        self['info'] = Label(_('Getting the list, please wait ...'))
+        self['text'] = SetList([])
+        self['info'] = Label(_('Loading data... Please wait'))
         self['key_green'] = Button(_('Play'))
         self['key_red'] = Button(_('Back'))
         self['key_yellow'] = Button(_(''))
@@ -678,7 +628,7 @@ class tvRai4(Screen):
         self['key_blue'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if os.path.exists('/var/lib/dpkg/status'):
+        if DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -699,8 +649,8 @@ class tvRai4(Screen):
         pic = " "
         regexcat = 'data-video-json="(.*?)".*?<img alt="(.*?)"'
         match = re.compile(regexcat, re.DOTALL).findall(content)
-        for url, name in match:
-            try:
+        try:
+            for url, name in match:
                 url1 = "http://www.raiplay.it" + url
                 content2 = getUrl(url1)
                 if PY3:
@@ -710,14 +660,14 @@ class tvRai4(Screen):
                 url2 = match2[0].replace("json", "html")
                 url3 = "http://www.raiplay.it/video/" + url2
                 name = decodeHtml(name)
-                url3 = checkStr(url3)
+                url3 = url3
                 self.names.append(name)
                 self.urls.append(url3)
-            except Exception as e:
-                print('error tvr4 ', e)
+
+        except Exception as e:
+            print('error tvr4 ', e)
         self['info'].setText(_('Please select ...'))
         showlist(self.names, self['text'])
-
 
     def okRun(self):
         idx = self["text"].getSelectionIndex()
@@ -726,7 +676,10 @@ class tvRai4(Screen):
         print('nameok : ', name)
         print('urlok:  ', url)
         try:
-            from Plugins.Extensions.tvRaiPreview.res.youtube_dl import YoutubeDL
+            # try:
+            from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
+            # except:
+                # from youtube_dl.Youtube_DL import *
             ydl_opts = {'format': 'best'}
             '''
             ydl_opts = {'format': 'bestaudio/best'}
@@ -737,11 +690,9 @@ class tvRai4(Screen):
             print ("rai result =", result)
             url = result["url"]
             print ("rai final url =", url)
-            self.session.open(Playstream4, name, url)           
-
+            self.session.open(Playstream4, name, url)
         except Exception as e:
             print('error tvr4 e  ', e)
-
 '''
 rai end
 '''
@@ -883,20 +834,18 @@ class Playstream4(
          'ColorActions',
          'InfobarShowHideActions',
          'InfobarActions',
-         'InfobarSeekActions'], {'leavePlayer': self.cancel,
+         'InfobarSeekActions'], {'stop': self.cancel,
          'epg': self.showIMDB,
          'info': self.showinfo,
          # 'info': self.cicleStreamType,
          'tv': self.cicleStreamType,
-         'stop': self.leavePlayer,
+         # 'stop': self.leavePlayer,
          'cancel': self.cancel,
          'back': self.cancel}, -1)
         self.allowPiP = False
-        # InfoBarSeek.__init__(self, ActionMap='InfobarSeekActions')
         self.service = None
         service = None
         self.url = url
-                                              
         self.pcip = 'None'
         self.name = decodeHtml(name)
         self.state = self.STATE_PLAYING
@@ -908,7 +857,7 @@ class Playstream4(
             # self.onLayoutFinish.append(self.cicleStreamType)
             self.onFirstExecBegin.append(self.cicleStreamType)
         self.onClose.append(self.cancel)
-              
+
 
     def getAspect(self):
         return AVSwitch().getAspectRatioSetting()
@@ -945,7 +894,7 @@ class Playstream4(
         self.setAspect(temp)
 
     def showinfo(self):
-        debug = True
+        # debug = True
         sTitle = ''
         sServiceref = ''
         try:
@@ -1017,13 +966,16 @@ class Playstream4(
         self.servicetype = '4097'
         print('servicetype1: ', self.servicetype)
         url = str(self.url)
+        if str(os.path.splitext(self.url)[-1]) == ".m3u8":
+            if self.servicetype == "1":
+                self.servicetype = "4097"
         currentindex = 0
         streamtypelist = ["4097"]
         # if "youtube" in str(self.url):
             # self.mbox = self.session.open(MessageBox, _('For Stream Youtube coming soon!'), MessageBox.TYPE_INFO, timeout=5)
             # return
         if isStreamlinkAvailable():
-            streamtypelist.append("5002") #ref = '5002:0:1:0:0:0:0:0:0:0:http%3a//127.0.0.1%3a8088/' + url
+            streamtypelist.append("5002")
             streaml = True
         if os.path.exists("/usr/bin/gstplayer"):
             streamtypelist.append("5001")
@@ -1076,17 +1028,30 @@ class Playstream4(
         self.close()
 
     def leavePlayer(self):
-        self.close()                     
+        self.close()
+
+def checks():
+    from Plugins.Extensions.revolution.Utils import checkInternet
+    checkInternet()
+    chekin= False
+    if checkInternet():
+        chekin = True
+    return chekin
 
 def main(session, **kwargs):
-    if checkInternet():
+    if checks:
+        try:
+            from Plugins.Extensions.tvRaiPreview.Update import upd_done
+            upd_done()
+        except:
+            pass
         session.open(tgrRai)
     else:
         session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
 
 def StartSetup(menuid, **kwargs):
     if menuid == 'mainmenu':
-        return [(_('tvRaiPreview'), main, 'tvRaiPreview', 15)]
+        return [(_('Rai Preview'), main, 'tvRaiPreview', 15)]
     else:
         return []
 
