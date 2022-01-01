@@ -35,7 +35,7 @@ from Screens.InfoBarGenerics import InfoBarMenu, InfoBarSeek, InfoBarAudioSelect
     InfoBarSubtitleSupport, InfoBarSummarySupport, InfoBarServiceErrorPopupSupport, InfoBarNotifications
 from ServiceReference import ServiceReference
 from Tools.Directories import SCOPE_PLUGINS
-from Tools.Directories import pathExists, resolveFilename, fileExists, copyfile
+from Tools.Directories import pathExists, resolveFilename 
 from enigma import *
 from enigma import RT_HALIGN_CENTER, RT_VALIGN_CENTER
 from enigma import RT_HALIGN_LEFT, RT_HALIGN_RIGHT
@@ -109,12 +109,6 @@ pluglogo = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".
 pngx = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugins.png'))
 pngl = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugin.png'))
 pngs = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('setting.png'))
-
-# res_plugin_path = plugin_path + '/res/'
-# pluglogo = res_plugin_path + 'pics/logo.png'
-# pngx = res_plugin_path + 'pics/plugins.png'
-# pngl = res_plugin_path + 'pics/plugin.png'
-# pngs = res_plugin_path + 'pics/setting.png'
 desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion
 name_plugin = 'TiVu Rai Preview'
 
@@ -136,16 +130,16 @@ else:
 class SetList(MenuList):
     def __init__(self, list):
         MenuList.__init__(self, list, False, eListboxPythonMultiContent)
-        self.l.setFont(0, gFont('Regular', 20))
-        self.l.setFont(1, gFont('Regular', 22))
-        self.l.setFont(2, gFont('Regular', 24))
-        self.l.setFont(3, gFont('Regular', 26))
-        self.l.setFont(4, gFont('Regular', 28))
-        self.l.setFont(5, gFont('Regular', 30))
-        self.l.setFont(6, gFont('Regular', 32))
-        self.l.setFont(7, gFont('Regular', 34))
-        self.l.setFont(8, gFont('Regular', 36))
-        self.l.setFont(9, gFont('Regular', 40))
+        # self.l.setFont(0, gFont('Regular', 20))
+        # self.l.setFont(1, gFont('Regular', 22))
+        # self.l.setFont(2, gFont('Regular', 24))
+        # self.l.setFont(3, gFont('Regular', 26))
+        # self.l.setFont(4, gFont('Regular', 28))
+        # self.l.setFont(5, gFont('Regular', 30))
+        # self.l.setFont(6, gFont('Regular', 32))
+        # self.l.setFont(7, gFont('Regular', 34))
+        # self.l.setFont(8, gFont('Regular', 36))
+        # self.l.setFont(9, gFont('Regular', 40))
         if isFHD():
             self.l.setItemHeight(50)
             textfont = int(34)
@@ -938,7 +932,7 @@ class Playstream4(
 
     def slinkPlay(self, url):
         name = self.name
-        ref = "{0}:{1}".format(url.replace(":", "%3A"), name.replace(":", "%3A"))
+        ref = "{0}:{1}".format(url.replace(":", "%3a"), name.replace(":", "%3a"))
         print('final reference:   ', ref)
         sref = eServiceReference(ref)
         sref.setName(name)
@@ -947,11 +941,11 @@ class Playstream4(
 
     def openTest(self, servicetype, url):
         name = self.name
-        ref = "{0}:0:0:0:0:0:0:0:0:0:{1}:{2}".format(servicetype, url.replace(":", "%3A"), name.replace(":", "%3A"))
+        ref = "{0}:0:0:0:0:0:0:0:0:0:{1}:{2}".format(servicetype, url.replace(":", "%3a"), name.replace(":", "%3a"))
         print('reference:   ', ref)
         if streaml == True:
             url = 'http://127.0.0.1:8088/' + str(url)
-            ref = "{0}:0:1:0:0:0:0:0:0:0:{1}:{2}".format(servicetype, url.replace(":", "%3A"), name.replace(":", "%3A"))
+            ref = "{0}:0:1:0:0:0:0:0:0:0:{1}:{2}".format(servicetype, url.replace(":", "%3a"), name.replace(":", "%3a"))
             print('streaml reference:   ', ref)
         print('final reference:   ', ref)
         sref = eServiceReference(ref)
