@@ -4,7 +4,7 @@
 ****************************************
 *        coded by Lululla              *
 *                                      *
-*             11/12/2021               *
+*             06/01/2022               *
 *       Skin by MMark                  *
 ****************************************
 Info http://t.me/tivustream
@@ -104,7 +104,6 @@ def checkUrl(url):
 
 currversion = '1.2'
 plugin_path = os.path.dirname(sys.modules[__name__].__file__)
-skin_path = plugin_path
 pluglogo = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('logo.png'))
 pngx = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugins.png'))
 pngl = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugin.png'))
@@ -112,34 +111,30 @@ pngs = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".form
 desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion
 name_plugin = 'TiVu Rai Preview'
 
+skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))  
 if isFHD():
-    if DreamOS():
-        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/dreamOs/".format('tvRaiPreview'))
-        # skin_path = res_plugin_path + 'skins/fhd/dreamOs/'
-    else:
+    # if DreamOS():
+        # skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/dreamOs/".format('tvRaiPreview'))
+        # # skin_path = res_plugin_path + 'skins/fhd/dreamOs/'
+    # else:
         skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))    
         # skin_path = res_plugin_path + 'skins/fhd/'
-else:
-    if DreamOS():
-        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/dreamOs/".format('tvRaiPreview'))    
-        # skin_path = res_plugin_path + 'skins/hd/dreamOs/'
-    else:
-        # skin_path = res_plugin_path + 'skins/hd/'
-        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))           
+# else:
+    # # if DreamOS():
+        # # skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/dreamOs/".format('tvRaiPreview'))    
+        # # # skin_path = res_plugin_path + 'skins/hd/dreamOs/'
+    # # else:
+        # # # skin_path = res_plugin_path + 'skins/hd/'
+        # skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))           
+
+if DreamOS():
+    skin_path = skin_path + "dreamOs/"
+
+
 
 class SetList(MenuList):
     def __init__(self, list):
         MenuList.__init__(self, list, False, eListboxPythonMultiContent)
-        # self.l.setFont(0, gFont('Regular', 20))
-        # self.l.setFont(1, gFont('Regular', 22))
-        # self.l.setFont(2, gFont('Regular', 24))
-        # self.l.setFont(3, gFont('Regular', 26))
-        # self.l.setFont(4, gFont('Regular', 28))
-        # self.l.setFont(5, gFont('Regular', 30))
-        # self.l.setFont(6, gFont('Regular', 32))
-        # self.l.setFont(7, gFont('Regular', 34))
-        # self.l.setFont(8, gFont('Regular', 36))
-        # self.l.setFont(9, gFont('Regular', 40))
         if isFHD():
             self.l.setItemHeight(50)
             textfont = int(34)
@@ -198,8 +193,8 @@ class tgrRai(Screen):
         self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
          'green': self.okRun,
-         'red': self.close,
-         'cancel': self.close}, -2)
+         'red': self.exit,
+         'cancel': self.exit}, -2)
 
     def _gotPageLoad(self):
         self.names = []
@@ -255,6 +250,10 @@ class tgrRai(Screen):
             self.session.open(tgrRai2, name, url)
         else:
             self.session.open(tvRai2, name, url)
+
+    def exit(self):
+        deletetmp()
+        self.close()
 
 class tgrRai2(Screen):
     def __init__(self, session, name, url):
