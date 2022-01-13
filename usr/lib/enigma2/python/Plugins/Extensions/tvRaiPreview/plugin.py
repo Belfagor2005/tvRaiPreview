@@ -4,7 +4,7 @@
 ****************************************
 *        coded by Lululla              *
 *                                      *
-*             06/01/2022               *
+*             13/01/2022               *
 *       Skin by MMark                  *
 ****************************************
 Info http://t.me/tivustream
@@ -327,7 +327,7 @@ class tgrRai2(Screen):
             self['info'].setText(_('Please select ...'))
             showlist(self.names, self['text'])
         except Exception as e:
-            print('error: ', e)
+            print('error: ', str(e))
             pass
 
     def okRun(self):
@@ -412,7 +412,7 @@ class tgrRai3(Screen):
             self['info'].setText(_('Please select ...'))
             showlist(self.names, self['text'])
         except Exception as e:
-            print('error: ', e)
+            print('error: ', str(e))
             pass
 
     def okRun(self):
@@ -463,12 +463,19 @@ class tvRai2(Screen):
         content = getUrl(url)
         if PY3:
             content = six.ensure_str(content)
-        # items = []
+        items = []
         pic = " "
         regexcat = 'data-video-json="(.*?)".*?<img alt="(.*?)"'
         match = re.compile(regexcat, re.DOTALL).findall(content)
-        for url, name in match:
-            try:
+        
+       
+        # this = '/tmp/rai-play-'  
+        # filex = this + self.name.lower() + '.m3u'
+        # f=open(filex,"w")        
+        # f.write("#EXTM3U\n")
+        
+        try:        
+            for url, name in match:
                 url1 = "http://www.raiplay.it" + url
                 content2 = getUrl(url1)
                 if PY3:
@@ -478,13 +485,42 @@ class tvRai2(Screen):
                 url2 = match2[0].replace("json", "html")
                 url3 = "http://www.raiplay.it/video/" + url2
                 name = decodeHtml(name)
-                # url3 = checkStr(url3)
+                name = name.replace('-','').replace('RaiPlay','')
+
+                item = name + "###" + url3
+                items.append(item)
+                
+            items.sort()
+            for item in items:
+                name = item.split("###")[0]
+                url3 = item.split("###")[1]
                 self.names.append(name)
                 self.urls.append(url3)
-            except Exception as e:
-                print('error: ', e)
+                
+                # # ################                
+                # txt1 = "#EXTINF:-1," + name + "\n"
+                # f.write(txt1)
+
+                # from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
+                # ydl_opts = {'format': 'best'}
+                # '''
+                # ydl_opts = {'format': 'bestaudio/best'}
+                # '''
+                # ydl = YoutubeDL(ydl_opts)
+                # ydl.add_default_info_extractors()
+                # result = ydl.extract_info(url3, download=False)
+                # print ("rai result =", result)
+                # url = result["url"]
+                # print ("rai final url =", url)
+                # txt2 = url + "\n"
+                # f.write(txt2)
+                # # ################
+
+        except Exception as e:
+            print('error: ', str(e))
         self['info'].setText(_('Please select ...'))
         showlist(self.names, self['text'])
+
 
     def okRun(self):
         idx = self["text"].getSelectionIndex()
@@ -509,7 +545,7 @@ class tvRai2(Screen):
             print ("rai final url =", url)
             self.session.open(Playstream4, name, url)
         except Exception as e:
-            print('error tvr4 e  ', e)
+            print('error tvr4 e  ', str(e))
 
 class tvRai3(Screen):
     def __init__(self, session, name, url):
@@ -566,7 +602,7 @@ class tvRai3(Screen):
                     self.names.append(name)
                     self.urls.append(url3)
         except Exception as e:
-            print('error: ', e)
+            print('error: ', str(e))
         self['info'].setText(_('Please select ...'))
         showlist(self.names, self['text'])
 
@@ -596,7 +632,7 @@ class tvRai3(Screen):
             else:
                 self.session.open(tvRai4, name, url)
         except Exception as e:
-            print('error tvr3 ', e)
+            print('error: ', str(e))
 
 
 class tvRai4(Screen):
@@ -658,7 +694,7 @@ class tvRai4(Screen):
                 self.urls.append(url3)
 
         except Exception as e:
-            print('error tvr4 ', e)
+            print('error: ', str(e))
         self['info'].setText(_('Please select ...'))
         showlist(self.names, self['text'])
 
@@ -685,7 +721,7 @@ class tvRai4(Screen):
             print ("rai final url =", url)
             self.session.open(Playstream4, name, url)
         except Exception as e:
-            print('error tvr4 e  ', e)
+            print('error: ', str(e))
 '''
 rai end
 '''
@@ -1042,19 +1078,19 @@ def main(session, **kwargs):
     else:
         session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
 
-def StartSetup(menuid, **kwargs):
-    if menuid == 'mainmenu':
-        return [(_('Rai Preview'), main, 'tvRaiPreview', 15)]
-    else:
-        return []
+# def StartSetup(menuid, **kwargs):
+    # if menuid == 'mainmenu':
+        # return [(_('Rai Preview'), main, 'tvRaiPreview', 15)]
+    # else:
+        # return []
 
 def Plugins(**kwargs):
     ico_path = 'logo.png'
     if not os.path.exists('/var/lib/dpkg/status'):
         ico_path = plugin_path + '/res/pics/logo.png'
-    main_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_MENU, fnc = StartSetup, needsRestart = True)
+    # main_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_MENU, fnc = StartSetup, needsRestart = True)
     extensions_menu = PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = main, needsRestart = True)
     result = [PluginDescriptor(name = name_plugin, description = desc_plugin, where = PluginDescriptor.WHERE_PLUGINMENU, icon = ico_path, fnc = main)]
     result.append(extensions_menu)
-    result.append(main_menu)
+    # result.append(main_menu)
     return result
