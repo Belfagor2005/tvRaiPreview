@@ -4,7 +4,7 @@
 ****************************************
 *        coded by Lululla              *
 *                                      *
-*             14/01/2022               *
+*             25/01/2022               *
 *       Skin by MMark                  *
 ****************************************
 Info http://t.me/tivustream
@@ -113,24 +113,9 @@ name_plugin = 'TiVu Rai Preview'
 
 skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))  
 if isFHD():
-    # if DreamOS():
-        # skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/dreamOs/".format('tvRaiPreview'))
-        # # skin_path = res_plugin_path + 'skins/fhd/dreamOs/'
-    # else:
-        skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))    
-        # skin_path = res_plugin_path + 'skins/fhd/'
-# else:
-    # # if DreamOS():
-        # # skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/dreamOs/".format('tvRaiPreview'))    
-        # # # skin_path = res_plugin_path + 'skins/hd/dreamOs/'
-    # # else:
-        # # # skin_path = res_plugin_path + 'skins/hd/'
-        # skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))           
-
+    skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))    
 if DreamOS():
     skin_path = skin_path + "dreamOs/"
-
-
 
 class SetList(MenuList):
     def __init__(self, list):
@@ -146,12 +131,11 @@ class SetList(MenuList):
 
 def OneSetListEntry(name):
     res = [name]
+    res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
+    res.append(MultiContentEntryText(pos=(60, 0), size=(1000, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))    
     if isFHD():
         res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
         res.append(MultiContentEntryText(pos=(60, 0), size=(1900, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
-    else:
-        res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 6), size=(34, 25), png=loadPNG(pngx)))
-        res.append(MultiContentEntryText(pos=(60, 0), size=(1000, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     return res
 
 def showlist(data, list):
