@@ -315,6 +315,10 @@ class tgrRai2(Screen):
             pass
 
     def okRun(self):
+        i = len(self.names)
+        print('iiiiii= ',i)
+        if i < 1:
+            return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
@@ -400,11 +404,13 @@ class tgrRai3(Screen):
             pass
 
     def okRun(self):
+        i = len(self.names)
+        print('iiiiii= ',i)
+        if i < 1:
+            return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
-        print('name : ', name)
-        print('url:  ', url)
         self.session.open(Playstream4, name, url)
 
 class tvRai2(Screen):
@@ -507,6 +513,10 @@ class tvRai2(Screen):
 
 
     def okRun(self):
+        i = len(self.names)
+        print('iiiiii= ',i)
+        if i < 1:
+            return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
@@ -591,6 +601,10 @@ class tvRai3(Screen):
         showlist(self.names, self['text'])
 
     def okRun(self):
+        i = len(self.names)
+        print('iiiiii= ',i)
+        if i < 1:
+            return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
@@ -683,6 +697,10 @@ class tvRai4(Screen):
         showlist(self.names, self['text'])
 
     def okRun(self):
+        i = len(self.names)
+        print('iiiiii= ',i)
+        if i < 1:
+            return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
