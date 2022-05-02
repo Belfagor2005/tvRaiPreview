@@ -4,7 +4,7 @@
 ****************************************
 *        coded by Lululla              *
 *                                      *
-*             25/01/2022               *
+*             02/05/2022               *
 *       Skin by MMark                  *
 ****************************************
 Info http://t.me/tivustream
@@ -57,10 +57,16 @@ import six
 from Tools.LoadPixmap import LoadPixmap
 global skin_path, pluglogo, pngx, pngl, pngs
 from sys import version_info
+
 PY3 = sys.version_info.major >= 3
 print('Py3: ',PY3)
-from six.moves.urllib.request import urlopen
-from six.moves.urllib.request import Request
+if PY3:
+    from urllib.request import urlopen
+    from urllib.request import Request
+else:
+    from urllib2 import Request
+    from urllib2 import urlopen
+
 try:
     from Plugins.Extensions.tvRaiPreview.Utils import *
 except:
@@ -89,18 +95,6 @@ except AttributeError:
 else:
     ssl._create_default_https_context = _create_unverified_https_context
 
-
-def checkUrl(url):
-    try:
-        response = checkStr(urlopen(url, None, 5))
-        response.close()
-        return True
-    except HTTPError:
-        return False
-    except URLError:
-        return False
-    except socket.timeout:
-        return False
 
 currversion = '1.2'
 plugin_path = os.path.dirname(sys.modules[__name__].__file__)
@@ -131,11 +125,12 @@ class SetList(MenuList):
 
 def OneSetListEntry(name):
     res = [name]
-    res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
-    res.append(MultiContentEntryText(pos=(60, 0), size=(1000, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))    
     if isFHD():
         res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
         res.append(MultiContentEntryText(pos=(60, 0), size=(1900, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+    else:        
+        res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
+        res.append(MultiContentEntryText(pos=(60, 0), size=(1000, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))    
     return res
 
 def showlist(data, list):
@@ -168,6 +163,7 @@ class tgrRai(Screen):
         self["key_blue"] = Button(_(''))
         self['key_yellow'].hide()
         self['key_blue'].hide()
+        self['key_green'].hide()        
         self.timer = eTimer()
         self.timer.start(1500, True)
         if DreamOS():
@@ -223,6 +219,7 @@ class tgrRai(Screen):
         self.pics.append(pngx)
         showlist(self.names, self['text'])
         self['info'].setText(_('Please select ...'))
+        self['key_green'].show() 
 
     def okRun(self):
         idx = self["text"].getSelectionIndex()
@@ -259,6 +256,7 @@ class tgrRai2(Screen):
         self["key_blue"] = Button(_(''))
         self['key_yellow'].hide()
         self['key_blue'].hide()
+        self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
         if DreamOS():
@@ -309,6 +307,7 @@ class tgrRai2(Screen):
                 self.urls.append(url)
                 # self.pics.append(pic)
             self['info'].setText(_('Please select ...'))
+            self['key_green'].show() 
             showlist(self.names, self['text'])
         except Exception as e:
             print('error: ', str(e))
@@ -347,6 +346,7 @@ class tgrRai3(Screen):
         self["key_blue"] = Button(_(''))
         self['key_yellow'].hide()
         self['key_blue'].hide()
+        self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
         if DreamOS():
@@ -398,6 +398,7 @@ class tgrRai3(Screen):
                 self.urls.append(url)
                 # self.pics.append(pic)
             self['info'].setText(_('Please select ...'))
+            self['key_green'].show() 
             showlist(self.names, self['text'])
         except Exception as e:
             print('error: ', str(e))
@@ -433,6 +434,7 @@ class tvRai2(Screen):
         self["key_blue"] = Button(_(''))
         self['key_yellow'].hide()
         self['key_blue'].hide()
+        self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
         if DreamOS():
@@ -458,7 +460,6 @@ class tvRai2(Screen):
         regexcat = 'data-video-json="(.*?)".*?<img alt="(.*?)"'
         match = re.compile(regexcat, re.DOTALL).findall(content)
         
-       
         # this = '/tmp/rai-play-'  
         # filex = this + self.name.lower() + '.m3u'
         # f=open(filex,"w")        
@@ -509,6 +510,7 @@ class tvRai2(Screen):
         except Exception as e:
             print('error: ', str(e))
         self['info'].setText(_('Please select ...'))
+        self['key_green'].show() 
         showlist(self.names, self['text'])
 
 
@@ -561,6 +563,7 @@ class tvRai3(Screen):
         self["key_blue"] = Button(_(''))
         self['key_yellow'].hide()
         self['key_blue'].hide()
+        self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
         if DreamOS():
@@ -598,6 +601,7 @@ class tvRai3(Screen):
         except Exception as e:
             print('error: ', str(e))
         self['info'].setText(_('Please select ...'))
+        self['key_green'].show() 
         showlist(self.names, self['text'])
 
     def okRun(self):
@@ -653,6 +657,7 @@ class tvRai4(Screen):
         self["key_blue"] = Button(_(''))
         self['key_yellow'].hide()
         self['key_blue'].hide()
+        self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
         if DreamOS():
@@ -694,6 +699,7 @@ class tvRai4(Screen):
         except Exception as e:
             print('error: ', str(e))
         self['info'].setText(_('Please select ...'))
+        self['key_green'].show() 
         showlist(self.names, self['text'])
 
     def okRun(self):
@@ -1061,19 +1067,12 @@ class Playstream4(
     def leavePlayer(self):
         self.close()
 
-def checks():
-    from Plugins.Extensions.revolution.Utils import checkInternet
-    checkInternet()
-    chekin= False
-    if checkInternet():
-        chekin = True
-    return chekin
-
 def main(session, **kwargs):
-    if checks:
+    from . import Utils
+    if Utils.checkInternet():
         try:
-            from Plugins.Extensions.tvRaiPreview.Update import upd_done
-            upd_done()
+            from . import Update
+            Update.upd_done()
         except:
             pass
         session.open(tgrRai)

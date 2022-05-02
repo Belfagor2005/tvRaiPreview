@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tvdream\n"
-"POT-Creation-Date: 2021-01-31 09:17+0100\n"
+"POT-Creation-Date: 2022-04-26 20:58+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -13,44 +13,56 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SearchPath-0: plugin.py\n"
 
-#: plugin.py:273 plugin.py:340 plugin.py:440
-msgid "Getting the list, please wait ..."
-msgstr "Ricevo l'elenco , si prega di attendere ..."
+#: plugin.py:164 plugin.py:255 plugin.py:343 plugin.py:429 plugin.py:557
+#: plugin.py:649
+msgid "Loading data... Please wait"
+msgstr ""
 
-#: plugin.py:274 plugin.py:341
+#: plugin.py:165 plugin.py:256 plugin.py:344
 msgid "Select"
 msgstr "Seleziona"
 
-#: plugin.py:275 plugin.py:345 plugin.py:442
+#: plugin.py:166 plugin.py:257 plugin.py:345 plugin.py:431 plugin.py:559
+#: plugin.py:651
 msgid "Back"
 msgstr "Indietro"
 
-#: plugin.py:368 plugin.py:466
-msgid "Try again later ..."
-msgstr ""
-
-#: plugin.py:406 plugin.py:503
+#: plugin.py:225 plugin.py:311 plugin.py:400 plugin.py:511 plugin.py:600
+#: plugin.py:696
 msgid "Please select ..."
 msgstr "Seleziona Prego ..."
 
-#: plugin.py:441
+#: plugin.py:430 plugin.py:558 plugin.py:650
 msgid "Play"
 msgstr "Play"
 
-#: plugin.py:532
-msgid "Nothing ..."
+#: plugin.py:897
+msgid "4:3 Letterbox"
 msgstr ""
 
-#: plugin.py:621
-msgid "tvRaiPreview"
+#: plugin.py:898
+msgid "4:3 PanScan"
 msgstr ""
 
-#: plugin.py:629
-#, python-format
-msgid "..:: TiVu Rai Preview by Lululla %s ::.. "
+#: plugin.py:899
+msgid "16:9"
 msgstr ""
 
-#: plugin.py:630
-msgid "TiVuRaiPreview"
+#: plugin.py:900
+msgid "16:9 always"
 msgstr ""
 
+#: plugin.py:901
+msgid "16:10 Letterbox"
+msgstr ""
+
+#: plugin.py:902
+msgid "16:10 PanScan"
+msgstr ""
+
+#: plugin.py:903
+msgid "16:9 Letterbox"
+msgstr ""
+
+#~ msgid "Getting the list, please wait ..."
+#~ msgstr "Ricevo l'elenco , si prega di attendere ..."
