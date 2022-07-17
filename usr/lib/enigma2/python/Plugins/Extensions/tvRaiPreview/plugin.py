@@ -4,7 +4,7 @@
 ****************************************
 *        coded by Lululla              *
 *                                      *
-*             02/05/2022               *
+*             02/07/2022               *
 *       Skin by MMark                  *
 ****************************************
 Info http://t.me/tivustream
@@ -1067,17 +1067,41 @@ class Playstream4(
     def leavePlayer(self):
         self.close()
 
+def intCheck():
+    import socket
+    try:
+        socket.setdefaulttimeout(1)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+        return True
+    except:
+        return False
+
 def main(session, **kwargs):
-    from . import Utils
-    if Utils.checkInternet():
-        try:
-            from . import Update
-            Update.upd_done()
-        except:
-            pass
-        session.open(tgrRai)
-    else:
-        session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
+    try:
+        if intCheck():
+                from . import Update
+                Update.upd_done()
+                session.open(tgrRai)
+        else:
+            from Screens.MessageBox import MessageBox
+            from Tools.Notifications import AddPopup
+            AddPopup(_("Sorry but No Internet :("),MessageBox.TYPE_INFO, 10, 'Sorry')  
+    except:
+        import traceback
+        traceback.print_exc() 
+        pass
+        
+# def main(session, **kwargs):
+    # from . import Utils
+    # if Utils.checkInternet():
+        # try:
+            # from . import Update
+            # Update.upd_done()
+        # except:
+            # pass
+        # session.open(tgrRai)
+    # else:
+        # session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
 
 # def StartSetup(menuid, **kwargs):
     # if menuid == 'mainmenu':
