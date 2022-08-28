@@ -4,7 +4,7 @@
 ****************************************
 *        coded by Lululla              *
 *                                      *
-*             02/07/2022               *
+*             02/08/2022               *
 *       Skin by MMark                  *
 ****************************************
 Info http://t.me/tivustream
@@ -1067,18 +1067,9 @@ class Playstream4(
     def leavePlayer(self):
         self.close()
 
-def intCheck():
-    import socket
-    try:
-        socket.setdefaulttimeout(1)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
-        return True
-    except:
-        return False
-
 def main(session, **kwargs):
     try:
-        if intCheck():
+        if Utils.zCheckInternet(0):
                 from . import Update
                 Update.upd_done()
                 session.open(tgrRai)
@@ -1090,24 +1081,7 @@ def main(session, **kwargs):
         import traceback
         traceback.print_exc() 
         pass
-        
-# def main(session, **kwargs):
-    # from . import Utils
-    # if Utils.checkInternet():
-        # try:
-            # from . import Update
-            # Update.upd_done()
-        # except:
-            # pass
-        # session.open(tgrRai)
-    # else:
-        # session.open(MessageBox, "No Internet", MessageBox.TYPE_INFO)
 
-# def StartSetup(menuid, **kwargs):
-    # if menuid == 'mainmenu':
-        # return [(_('Rai Preview'), main, 'tvRaiPreview', 15)]
-    # else:
-        # return []
 
 def Plugins(**kwargs):
     ico_path = 'logo.png'
