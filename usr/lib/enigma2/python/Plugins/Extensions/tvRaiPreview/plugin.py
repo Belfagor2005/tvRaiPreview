@@ -106,7 +106,7 @@ desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion
 name_plugin = 'TiVu Rai Preview'
 
 skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))  
-if isFHD():
+if Utils.isFHD():
     skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))    
 if DreamOS():
     skin_path = skin_path + "dreamOs/"
@@ -114,7 +114,7 @@ if DreamOS():
 class SetList(MenuList):
     def __init__(self, list):
         MenuList.__init__(self, list, False, eListboxPythonMultiContent)
-        if isFHD():
+        if Utils.isFHD():
             self.l.setItemHeight(50)
             textfont = int(34)
             self.l.setFont(0, gFont('Regular', textfont))
@@ -125,7 +125,7 @@ class SetList(MenuList):
 
 def OneSetListEntry(name):
     res = [name]
-    if isFHD():
+    if Utils.isFHD():
         res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
         res.append(MultiContentEntryText(pos=(60, 0), size=(1900, 50), font=0, text=name, color = 0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     else:        
@@ -275,7 +275,7 @@ class tgrRai2(Screen):
         self.pics = []
         name = self.name
         url = self.url
-        content = getUrl(url)
+        content = Utils.getUrl(url)
         if PY3:
             content = six.ensure_str(content)
         content = content.replace("\r", "").replace("\t", "").replace("\n", "")
@@ -365,7 +365,7 @@ class tgrRai3(Screen):
         self.pics = []
         name = self.name
         url = self.url
-        content = getUrl(url)
+        content = Utils.getUrl(url)
         if PY3:
             content = six.ensure_str(content)
         content = content.replace("\r", "").replace("\t", "").replace("\n", "")
@@ -452,7 +452,7 @@ class tvRai2(Screen):
         self.urls = []
         url = self.url
         name = self.name
-        content = getUrl(url)
+        content = Utils.getUrl(url)
         if PY3:
             content = six.ensure_str(content)
         items = []
@@ -468,7 +468,7 @@ class tvRai2(Screen):
         try:        
             for url, name in match:
                 url1 = "http://www.raiplay.it" + url
-                content2 = getUrl(url1)
+                content2 = Utils.getUrl(url1)
                 if PY3:
                     content2 = six.ensure_str(content2)
                 regexcat2 = '"/video/(.*?)"'
@@ -581,7 +581,7 @@ class tvRai3(Screen):
         self.urls = []
         url = self.url
         name = self.name
-        content = getUrl(url)
+        content = Utils.getUrl(url)
         if PY3:
             content = six.ensure_str(content)
         try:
@@ -675,7 +675,7 @@ class tvRai4(Screen):
         self.urls = []
         url = self.url
         name = self.name
-        content = getUrl(url)
+        content = Utils.getUrl(url)
         if PY3:
             content = six.ensure_str(content)
         pic = " "
@@ -684,7 +684,7 @@ class tvRai4(Screen):
         try:
             for url, name in match:
                 url1 = "http://www.raiplay.it" + url
-                content2 = getUrl(url1)
+                content2 = Utils.getUrl(url1)
                 if PY3:
                     content2 = six.ensure_str(content2)
                 regexcat2 = '"/video/(.*?)"'
@@ -1069,7 +1069,7 @@ class Playstream4(
 
 def main(session, **kwargs):
     try:
-        if Utils.zCheckInternet(0):
+        if Utils.zCheckInternet(1):
                 from . import Update
                 Update.upd_done()
                 session.open(tgrRai)

@@ -3,7 +3,6 @@ from twisted.web.client import downloadPage
 PY3 = sys.version_info.major >= 3
 print("Update.py")
 def upd_done():        
-    from twisted.web.client import downloadPage
     print( "In upd_done")
     xfile ='http://patbuweb.com/tvraipreview/tvraipreview.tar'
     print('xfile: ', xfile)
