@@ -54,6 +54,7 @@ import ssl
 import glob
 import json
 import six
+from . import Utils
 from Tools.LoadPixmap import LoadPixmap
 global skin_path, pluglogo, pngx, pngl, pngs
 from sys import version_info
@@ -66,11 +67,6 @@ if PY3:
 else:
     from urllib2 import Request
     from urllib2 import urlopen
-
-try:
-    from Plugins.Extensions.tvRaiPreview.Utils import *
-except:
-    from . import Utils
 
 if sys.version_info >= (2, 7, 9):
     try:
@@ -108,7 +104,7 @@ name_plugin = 'TiVu Rai Preview'
 skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))  
 if Utils.isFHD():
     skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))    
-if DreamOS():
+if Utils.DreamOS():
     skin_path = skin_path + "dreamOs/"
 
 class SetList(MenuList):
@@ -166,7 +162,7 @@ class tgrRai(Screen):
         self['key_green'].hide()        
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if DreamOS():
+        if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -233,7 +229,7 @@ class tgrRai(Screen):
             self.session.open(tvRai2, name, url)
 
     def exit(self):
-        deletetmp()
+        Utils.deletetmp()
         self.close()
 
 class tgrRai2(Screen):
@@ -259,7 +255,7 @@ class tgrRai2(Screen):
         self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if DreamOS():
+        if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -301,7 +297,7 @@ class tgrRai2(Screen):
                     url1 = "http://www.tgr.rai.it" + url
                 # pic = image
                 url = url1
-                name = decodeHtml(name)
+                name = Utils.decodeHtml(name)
 
                 self.names.append(name)
                 self.urls.append(url)
@@ -349,7 +345,7 @@ class tgrRai3(Screen):
         self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if DreamOS():
+        if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -393,7 +389,7 @@ class tgrRai3(Screen):
                     url1 = "http://www.tgr.rai.it" + url
                 # pic = image
                 url = url1
-                name = decodeHtml(name)
+                name = Utils.decodeHtml(name)
                 self.names.append(name)
                 self.urls.append(url)
                 # self.pics.append(pic)
@@ -437,7 +433,7 @@ class tvRai2(Screen):
         self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if DreamOS():
+        if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -475,7 +471,7 @@ class tvRai2(Screen):
                 match2 = re.compile(regexcat2,re.DOTALL).findall(content2)
                 url2 = match2[0].replace("json", "html")
                 url3 = "http://www.raiplay.it/video/" + url2
-                name = decodeHtml(name)
+                name = Utils.decodeHtml(name)
                 name = name.replace('-','').replace('RaiPlay','')
 
                 item = name + "###" + url3
@@ -566,7 +562,7 @@ class tvRai3(Screen):
         self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if DreamOS():
+        if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -595,7 +591,7 @@ class tvRai3(Screen):
                     pic = " "
                     print("getVideos5 name =", name)
                     print("getVideos5 url =", url)
-                    name = decodeHtml(name)
+                    name = Utils.decodeHtml(name)
                     self.names.append(name)
                     self.urls.append(url3)
         except Exception as e:
@@ -660,7 +656,7 @@ class tvRai4(Screen):
         self['key_green'].hide() 
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if DreamOS():
+        if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -691,7 +687,7 @@ class tvRai4(Screen):
                 match2 = re.compile(regexcat2,re.DOTALL).findall(content2)
                 url2 = match2[0].replace("json", "html")
                 url3 = "http://www.raiplay.it/video/" + url2
-                name = decodeHtml(name)
+                name = Utils.decodeHtml(name)
                 url3 = url3
                 self.names.append(name)
                 self.urls.append(url3)
@@ -884,7 +880,7 @@ class Playstream4(
         service = None
         self.url = url
         self.pcip = 'None'
-        self.name = decodeHtml(name)
+        self.name = Utils.decodeHtml(name)
         self.state = self.STATE_PLAYING
         SREF = self.session.nav.getCurrentlyPlayingServiceReference()
         if '8088' in str(self.url):
@@ -960,12 +956,12 @@ class Playstream4(
         if os.path.exists(TMDB):
             from Plugins.Extensions.TMBD.plugin import TMBD
             text_clear = self.name
-            text = charRemove(text_clear)
+            text = Utils.charRemove(text_clear)
             self.session.open(TMBD, text, False)
         elif os.path.exists(IMDb):
             from Plugins.Extensions.IMDb.plugin import IMDB
             text_clear = self.name
-            text = charRemove(text_clear)
+            text = Utils.charRemove(text_clear)
             HHHHH = text
             self.session.open(IMDB, HHHHH)
 
@@ -1011,7 +1007,7 @@ class Playstream4(
         # if "youtube" in str(self.url):
             # self.mbox = self.session.open(MessageBox, _('For Stream Youtube coming soon!'), MessageBox.TYPE_INFO, timeout=5)
             # return
-        if isStreamlinkAvailable():
+        if Utils.isStreamlinkAvailable():
             streamtypelist.append("5002")
             streaml = True
         if os.path.exists("/usr/bin/gstplayer"):
