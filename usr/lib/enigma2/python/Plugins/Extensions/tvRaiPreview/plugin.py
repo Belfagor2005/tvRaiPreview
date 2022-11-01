@@ -24,7 +24,7 @@ from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import MoviePlayer
 from Screens.InfoBarGenerics import InfoBarSeek, InfoBarAudioSelection, InfoBarNotifications
-from Screens.InfoBarGenerics import InfoBarSubtitleSupport, InfoBarMenu
+from Screens.InfoBarGenerics import InfoBarSubtitleSupport, InfoBarMenu, InfoBarShowHide
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Tools.Directories import SCOPE_PLUGINS
