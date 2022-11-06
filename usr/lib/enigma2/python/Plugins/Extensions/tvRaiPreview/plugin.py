@@ -16,20 +16,21 @@ from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Label import Label
 from Components.MenuList import MenuList
-from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixmapAlphaTest
-from Components.Pixmap import Pixmap
+from Components.MultiContent import MultiContentEntryText
+from Components.MultiContent import MultiContentEntryPixmapAlphaTest
+# # from Components.Pixmap import Pixmap
 from Components.PluginComponent import plugins
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import MoviePlayer
 from Screens.InfoBarGenerics import InfoBarSeek, InfoBarAudioSelection, InfoBarNotifications
-from Screens.InfoBarGenerics import InfoBarSubtitleSupport, InfoBarMenu, InfoBarShowHide
+from Screens.InfoBarGenerics import InfoBarSubtitleSupport, InfoBarMenu
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Tools.Directories import SCOPE_PLUGINS
 from Tools.Directories import resolveFilename
-from Tools.LoadPixmap import LoadPixmap
+# from Tools.LoadPixmap import LoadPixmap
 from enigma import RT_HALIGN_LEFT
 from enigma import RT_VALIGN_CENTER
 from enigma import eServiceReference, iPlayableService
@@ -131,6 +132,32 @@ def showlist(data, list):
         plist.append(OneSetListEntry(name))
         icount = icount+1
         list.setList(plist)
+
+
+def returnIMDB(text_clear):
+    TMDB = resolveFilename(SCOPE_PLUGINS, "Extensions/{}".format('TMDB'))
+    IMDb = resolveFilename(SCOPE_PLUGINS, "Extensions/{}".format('IMDb'))
+    if TMDB:
+        try:
+            from Plugins.Extensions.TMBD.plugin import TMBD
+            text = decodeHtml(text_clear)
+            _session.open(TMBD.tmdbScreen, text, 0)
+        except Exception as ex:
+            print("[XCF] Tmdb: ", str(ex))
+        return True
+    elif IMDb:
+        try:
+            from Plugins.Extensions.IMDb.plugin import main as imdb
+            text = decodeHtml(text_clear)
+            imdb(_session, text)
+        except Exception as ex:
+            print("[XCF] imdb: ", str(ex))
+        return True
+    else:
+        text_clear = decodeHtml(text_clear)
+        _session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)
+        return True
+    return
 
 
 '''
@@ -430,39 +457,57 @@ class tvRai2(Screen):
         url = self.url
         name = self.name
         content = Utils.getUrl(url)
+
         if PY3:
             content = six.ensure_str(content)
+        print(content)
         items = []
-        regexcat = 'data-video-json="(.*?)".*?<img alt="(.*?)"'
-        match = re.compile(regexcat, re.DOTALL).findall(content)
-        # this = '/tmp/rai-play-'
-        # filex = this + self.name.lower() + '.m3u'
-        # f=open(filex,"w")
-        # f.write("#EXTM3U\n")
-        try:
+        
+#
+        # i = 0
+        # while i < 10:
+        try:        
+            regexcat = 'data-video-json="(.*?).json".*?<img alt="(.*?)"'
+            match = re.compile(regexcat, re.DOTALL).findall(content)
+            # this = '/tmp/rai-play-'
+            # filex = this + self.name.lower() + '.m3u'
+            # f=open(filex,"w")
+            # f.write("#EXTM3U\n")
             for url, name in match:
-                url1 = "http://www.raiplay.it" + url
+                print('name1 ', name)
+                print('url1 ', url)
+                
+                url1 = "http://www.raiplay.it" + url + '.html'
                 content2 = Utils.getUrl(url1)
-                if PY3:
-                    content2 = six.ensure_str(content2)
-                regexcat2 = '"/video/(.*?)"'
+                # if PY3:
+                    # content2 = six.ensure_str(content2)
+                print('content2 ', content2)
+                # regexcat2 = '"/video/(.*?)",'
+                #/video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
+                #http://www.raiplay.it/video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
+               
+                regexcat2 = '"/video/(.*?)",'
                 match2 = re.compile(regexcat2, re.DOTALL).findall(content2)
                 url2 = match2[0].replace("json", "html")
-                url3 = "http://www.raiplay.it/video/" + url2
+                url3 = "http://www.raiplay.it/video/" + url2  # (url2.replace('json', 'html'))
+                print('url3 ', url3)
                 name = Utils.decodeHtml(name)
                 name = name.replace('-', '').replace('RaiPlay', '')
-                item = name + "###" + url3
-                items.append(item)
-            items.sort()
-            for item in items:
-                name = item.split("###")[0]
-                url3 = item.split("###")[1]
+                # item = name + "###" + url3
+                # items.append(item)
+            # items.sort()
+            # for item in items:
+                # if item not in items: 
+                    # name = item.split("###")[0]
+                    # url3 = item.split("###")[1]
+                print('name ', name)
+                print('url3 ', url3)
                 self.names.append(name)
                 self.urls.append(url3)
+                # i = i+1
                 # # ################
                 # txt1 = "#EXTINF:-1," + name + "\n"
                 # f.write(txt1)
-
                 # from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
                 # ydl_opts = {'format': 'best'}
                 # '''
@@ -477,12 +522,11 @@ class tvRai2(Screen):
                 # txt2 = url + "\n"
                 # f.write(txt2)
                 # # ################
-
         except Exception as e:
             print('error: ', str(e))
+        showlist(self.names, self['text'])    
         self['info'].setText(_('Please select ...'))
         self['key_green'].show()
-        showlist(self.names, self['text'])
 
     def okRun(self):
         i = len(self.names)
@@ -895,25 +939,8 @@ class Playstream4(
 
     def showIMDB(self):
         text_clear = self.name
-        if Utils.is_tmdb:
-            try:
-                from Plugins.Extensions.TMBD.plugin import TMBD
-                text = Utils.badcar(text_clear)
-                text = Utils.charRemove(text_clear)
-                _session.open(TMBD.tmdbScreen, text, 0)
-            except Exception as ex:
-                print("[XCF] Tmdb: ", str(ex))
-        elif Utils.is_imdb:
-            try:
-                from Plugins.Extensions.IMDb.plugin import main as imdb
-                text = Utils.badcar(text_clear)
-                text = Utils.charRemove(text_clear)
-                imdb(_session, text)
-                # _session.open(imdb, text)
-            except Exception as ex:
-                print("[XCF] imdb: ", str(ex))
-        else:
-            self.session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)
+        if returnIMDB(text_clear):
+            print('show imdb/tmdb')
 
     def slinkPlay(self, url):
         name = self.name
