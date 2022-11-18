@@ -18,8 +18,6 @@ from Components.Label import Label
 from Components.MenuList import MenuList
 from Components.MultiContent import MultiContentEntryText
 from Components.MultiContent import MultiContentEntryPixmapAlphaTest
-# # from Components.Pixmap import Pixmap
-from Components.PluginComponent import plugins
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
@@ -30,7 +28,6 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Tools.Directories import SCOPE_PLUGINS
 from Tools.Directories import resolveFilename
-# from Tools.LoadPixmap import LoadPixmap
 from enigma import RT_HALIGN_LEFT
 from enigma import RT_VALIGN_CENTER
 from enigma import eServiceReference, iPlayableService
@@ -140,7 +137,7 @@ def returnIMDB(text_clear):
     if TMDB:
         try:
             from Plugins.Extensions.TMBD.plugin import TMBD
-            text = decodeHtml(text_clear)
+            text = Utils.decodeHtml(text_clear)
             _session.open(TMBD.tmdbScreen, text, 0)
         except Exception as ex:
             print("[XCF] Tmdb: ", str(ex))
@@ -148,13 +145,13 @@ def returnIMDB(text_clear):
     elif IMDb:
         try:
             from Plugins.Extensions.IMDb.plugin import main as imdb
-            text = decodeHtml(text_clear)
+            text = Utils.decodeHtml(text_clear)
             imdb(_session, text)
         except Exception as ex:
             print("[XCF] imdb: ", str(ex))
         return True
     else:
-        text_clear = decodeHtml(text_clear)
+        text_clear = Utils.decodeHtml(text_clear)
         _session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)
         return True
     return
@@ -462,8 +459,7 @@ class tvRai2(Screen):
             content = six.ensure_str(content)
         print(content)
         items = []
-        
-#
+
         # i = 0
         # while i < 10:
         try:        
@@ -476,15 +472,15 @@ class tvRai2(Screen):
             for url, name in match:
                 print('name1 ', name)
                 print('url1 ', url)
-                
+
                 url1 = "http://www.raiplay.it" + url + '.html'
                 content2 = Utils.getUrl(url1)
                 # if PY3:
                     # content2 = six.ensure_str(content2)
                 print('content2 ', content2)
                 # regexcat2 = '"/video/(.*?)",'
-                #/video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
-                #http://www.raiplay.it/video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
+                # /video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
+                # http://www.raiplay.it/video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
                
                 regexcat2 = '"/video/(.*?)",'
                 match2 = re.compile(regexcat2, re.DOTALL).findall(content2)
@@ -497,7 +493,7 @@ class tvRai2(Screen):
                 # items.append(item)
             # items.sort()
             # for item in items:
-                # if item not in items: 
+                # if item not in items:
                     # name = item.split("###")[0]
                     # url3 = item.split("###")[1]
                 print('name ', name)
@@ -524,7 +520,7 @@ class tvRai2(Screen):
                 # # ################
         except Exception as e:
             print('error: ', str(e))
-        showlist(self.names, self['text'])    
+        showlist(self.names, self['text'])
         self['info'].setText(_('Please select ...'))
         self['key_green'].show()
 
@@ -539,10 +535,7 @@ class tvRai2(Screen):
         print('nameok : ', name)
         print('urlok:  ', url)
         try:
-            # try:
             from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
-            # except:
-                # from youtube_dl.Youtube_DL import *
             ydl_opts = {'format': 'best'}
             '''
             ydl_opts = {'format': 'bestaudio/best'}
@@ -626,10 +619,7 @@ class tvRai3(Screen):
         print('urlok:  ', url)
         try:
             if 'relinker' in url:
-                # try:
                 from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
-                # except:
-                    # from youtube_dl.Youtube_DL import *
                 ydl_opts = {'format': 'best'}
                 '''
                 ydl_opts = {'format': 'bestaudio/best'}

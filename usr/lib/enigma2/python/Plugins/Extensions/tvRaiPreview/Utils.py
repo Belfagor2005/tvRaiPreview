@@ -274,7 +274,7 @@ CountConnOk = 0
 def zCheckInternet(opt=1, server=None, port=None):  # opt=5 custom server and port.
     global CountConnOk
     sock = False
-    checklist = [("8.8.44.4", 53), ("8.8.88.8", 53), ("www.lululla.altervista.org/", 80), ("www.linuxsat-support.com", 443), ("www.google.com", 443)]
+    checklist = [("8.8.4.4", 53), ("8.8.8.8", 53), ("www.lululla.altervista.org/", 80), ("www.linuxsat-support.com", 443), ("www.google.com", 443)]
     if opt < 5:
         srv = checklist[opt]
     else:
@@ -652,24 +652,7 @@ def isStreamlinkAvailable():
 # WHERE_CHANNEL_CONTEXT_MENU = 15
 
 
-def AdultUrl(url):
-    import sys
-    if sys.version_info.major == 3:
-        import urllib.request as urllib2
-    elif sys.version_info.major == 2:
-        import urllib2
-    req = urllib2.Request(url)
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-    r = urllib2.urlopen(req, None, 15)
-    link = r.read()
-    r.close()
-    tlink = link
-    if str(type(tlink)).find('bytes') != -1:
-        try:
-            tlink = tlink.decode("utf-8")
-        except Exception as e:
-            print('error: ', str(e))
-    return tlink
+
 
 
 std_headers = {
@@ -742,6 +725,25 @@ def RequestAgent():
     RandomAgent = choice(ListAgent)
     return RandomAgent
 
+def AdultUrl(url):
+    import sys
+    if sys.version_info.major == 3:
+        import urllib.request as urllib2
+    elif sys.version_info.major == 2:
+        import urllib2
+    req = urllib2.Request(url)
+    # req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+    req.add_header('User-Agent', RequestAgent())
+    r = urllib2.urlopen(req, None, 15)
+    link = r.read()
+    r.close()
+    tlink = link
+    if str(type(tlink)).find('bytes') != -1:
+        try:
+            tlink = tlink.decode("utf-8")
+        except Exception as e:
+            print('error: ', str(e))
+    return tlink
 
 def ReadUrl2(url):
     if sys.version_info.major == 3:
@@ -817,14 +819,13 @@ def ReadUrl(url):
 
         elif str(type(link)).find('str') != -1:
             dec = "str"
-
         print("CreateLog Codifica ReadUrl: %s." % dec)
     except Exception as e:
         print("ReadUrl5 - Error: ", str(e))
         link = None
     return link
 
-
+#ssl_urlopen
 if PY3:
     def getUrl(url):
         req = Request(url)
