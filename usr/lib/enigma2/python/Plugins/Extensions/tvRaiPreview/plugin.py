@@ -184,10 +184,12 @@ class tgrRai(Screen):
         else:
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(name_plugin)
-        self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
-                                                                       'green': self.okRun,
-                                                                       'red': self.exit,
-                                                                       'cancel': self.exit}, -2)
+        self['actions'] = ActionMap(['OkCancelActions',
+                                     'ColorActions',
+                                     'DirectionActions'], {'ok': self.okRun,
+                                                           'green': self.okRun,
+                                                           'red': self.exit,
+                                                           'cancel': self.exit}, -2)
 
     def _gotPageLoad(self):
         self.names = []
@@ -275,9 +277,11 @@ class tgrRai2(Screen):
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(desc_plugin)
         self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
-                                                                       'green': self.okRun,
-                                                                       'red': self.close,
-                                                                       'cancel': self.close}, -2)
+        self['actions'] = ActionMap(['OkCancelActions',
+                                     'ColorActions',
+                                     'DirectionActions'], 'green': self.okRun,
+                                                          'red': self.close,
+                                                          'cancel': self.close}, -2)
 
     def _gotPageLoad(self):
         self.names = []
@@ -359,10 +363,12 @@ class tgrRai3(Screen):
         else:
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(name_plugin)
-        self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
-                                                                       'green': self.okRun,
-                                                                       'red': self.close,
-                                                                       'cancel': self.close}, -2)
+        self['actions'] = ActionMap(['OkCancelActions',
+                                     'ColorActions',
+                                     'DirectionActions'], {'ok': self.okRun,
+                                                           'green': self.okRun,
+                                                           'red': self.close,
+                                                           'cancel': self.close}, -2)
 
     def _gotPageLoad(self):
         self.names = []
@@ -443,10 +449,12 @@ class tvRai2(Screen):
         else:
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(name_plugin)
-        self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
-                                                                       'green': self.okRun,
-                                                                       'red': self.close,
-                                                                       'cancel': self.close}, -2)
+        self['actions'] = ActionMap(['OkCancelActions',
+                                     'ColorActions',
+                                     'DirectionActions'], {'ok': self.okRun,
+                                                           'green': self.okRun,
+                                                           'red': self.close,
+                                                           'cancel': self.close}, -2)
 
     def _gotPageLoad(self):
         self.names = []
@@ -575,10 +583,12 @@ class tvRai3(Screen):
         else:
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(name_plugin)
-        self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
-                                                                       'green': self.okRun,
-                                                                       'red': self.close,
-                                                                       'cancel': self.close}, -2)
+        self['actions'] = ActionMap(['OkCancelActions',
+                                     'ColorActions',
+                                     'DirectionActions'], {'ok': self.okRun,
+                                                           'green': self.okRun,
+                                                           'red': self.close,
+                                                           'cancel': self.close}, -2)
 
     def _gotPageLoad(self):
         self.names = []
@@ -661,10 +671,12 @@ class tvRai4(Screen):
         else:
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(name_plugin)
-        self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
-                                                                       'green': self.okRun,
-                                                                       'red': self.close,
-                                                                       'cancel': self.close}, -2)
+        self['actions'] = ActionMap(['OkCancelActions',
+                                     'ColorActions',
+                                     'DirectionActions'], {'ok': self.okRun,
+                                                           'green': self.okRun,
+                                                           'red': self.close,
+                                                           'cancel': self.close}, -2)
 
     def _gotPageLoad(self):
         self.names = []
@@ -866,7 +878,6 @@ class Playstream4(
                                      'MediaPlayerActions',
                                      'EPGSelectActions',
                                      'MediaPlayerSeekActions',
-                                     'SetupActions',
                                      'ColorActions',
                                      'InfobarShowHideActions',
                                      'InfobarActions',
