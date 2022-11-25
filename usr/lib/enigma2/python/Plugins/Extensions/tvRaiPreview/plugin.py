@@ -39,7 +39,7 @@ import sys
 import ssl
 import six
 from . import Utils
-
+from . import html_conv
 global skin_path, pluglogo, pngx, pngl, pngs
 
 PY3 = sys.version_info.major >= 3
@@ -137,7 +137,7 @@ def returnIMDB(text_clear):
     if TMDB:
         try:
             from Plugins.Extensions.TMBD.plugin import TMBD
-            text = Utils.decodeHtml(text_clear)
+            text = html_conv.html_unescape(text_clear)
             _session.open(TMBD.tmdbScreen, text, 0)
         except Exception as ex:
             print("[XCF] Tmdb: ", str(ex))
@@ -145,13 +145,13 @@ def returnIMDB(text_clear):
     elif IMDb:
         try:
             from Plugins.Extensions.IMDb.plugin import main as imdb
-            text = Utils.decodeHtml(text_clear)
+            text = html_conv.html_unescape(text_clear)
             imdb(_session, text)
         except Exception as ex:
             print("[XCF] imdb: ", str(ex))
         return True
     else:
-        text_clear = Utils.decodeHtml(text_clear)
+        text_clear = html_conv.html_unescape(text_clear)
         _session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)
         return True
     return
@@ -186,6 +186,7 @@ class tgrRai(Screen):
         self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['OkCancelActions',
                                      'ColorActions',
+                                     'ButtonSetupActions',
                                      'DirectionActions'], {'ok': self.okRun,
                                                            'green': self.okRun,
                                                            'red': self.exit,
@@ -276,9 +277,9 @@ class tgrRai2(Screen):
         else:
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(desc_plugin)
-        self['actions'] = ActionMap(['SetupActions', 'ColorActions'], {'ok': self.okRun,
         self['actions'] = ActionMap(['OkCancelActions',
                                      'ColorActions',
+                                     'ButtonSetupActions',
                                      'DirectionActions'], 'green': self.okRun,
                                                           'red': self.close,
                                                           'cancel': self.close}, -2)
@@ -314,7 +315,7 @@ class tgrRai2(Screen):
                     url1 = "http://www.tgr.rai.it" + url
                 # pic = image
                 url = url1
-                name = Utils.decodeHtml(name)
+                name = html_conv.html_unescape(name)
                 self.names.append(name)
                 self.urls.append(url)
                 # self.pics.append(pic)
@@ -364,6 +365,7 @@ class tgrRai3(Screen):
             self.timer.callback.append(self._gotPageLoad)
         self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['OkCancelActions',
+                                     'ButtonSetupActions',
                                      'ColorActions',
                                      'DirectionActions'], {'ok': self.okRun,
                                                            'green': self.okRun,
@@ -403,7 +405,7 @@ class tgrRai3(Screen):
                     url1 = "http://www.tgr.rai.it" + url
                 # pic = image
                 url = url1
-                name = Utils.decodeHtml(name)
+                name = html_conv.html_unescape(name)
                 self.names.append(name)
                 self.urls.append(url)
                 # self.pics.append(pic)
@@ -451,6 +453,7 @@ class tvRai2(Screen):
         self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['OkCancelActions',
                                      'ColorActions',
+                                     'ButtonSetupActions',
                                      'DirectionActions'], {'ok': self.okRun,
                                                            'green': self.okRun,
                                                            'red': self.close,
@@ -470,7 +473,7 @@ class tvRai2(Screen):
 
         # i = 0
         # while i < 10:
-        try:        
+        try:
             regexcat = 'data-video-json="(.*?).json".*?<img alt="(.*?)"'
             match = re.compile(regexcat, re.DOTALL).findall(content)
             # this = '/tmp/rai-play-'
@@ -489,13 +492,13 @@ class tvRai2(Screen):
                 # regexcat2 = '"/video/(.*?)",'
                 # /video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
                 # http://www.raiplay.it/video/info/014f4973-a60c-4d59-8dd4-fb104c0e3088.json
-               
+
                 regexcat2 = '"/video/(.*?)",'
                 match2 = re.compile(regexcat2, re.DOTALL).findall(content2)
                 url2 = match2[0].replace("json", "html")
                 url3 = "http://www.raiplay.it/video/" + url2  # (url2.replace('json', 'html'))
                 print('url3 ', url3)
-                name = Utils.decodeHtml(name)
+                name = html_conv.html_unescape(name)
                 name = name.replace('-', '').replace('RaiPlay', '')
                 # item = name + "###" + url3
                 # items.append(item)
@@ -585,6 +588,7 @@ class tvRai3(Screen):
         self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['OkCancelActions',
                                      'ColorActions',
+                                     'ButtonSetupActions',
                                      'DirectionActions'], {'ok': self.okRun,
                                                            'green': self.okRun,
                                                            'red': self.close,
@@ -608,7 +612,7 @@ class tvRai3(Screen):
                     url = "http://www.tgr.rai.it/" + url + '.html'
                     print("getVideos5 name =", name)
                     print("getVideos5 url =", url)
-                    name = Utils.decodeHtml(name)
+                    name = html_conv.html_unescape(name)
                     self.names.append(name)
                     self.urls.append(url)
         except Exception as e:
@@ -673,6 +677,7 @@ class tvRai4(Screen):
         self['title'] = Label(name_plugin)
         self['actions'] = ActionMap(['OkCancelActions',
                                      'ColorActions',
+                                     'ButtonSetupActions',
                                      'DirectionActions'], {'ok': self.okRun,
                                                            'green': self.okRun,
                                                            'red': self.close,
@@ -698,7 +703,7 @@ class tvRai4(Screen):
                 match2 = re.compile(regexcat2, re.DOTALL).findall(content2)
                 url2 = match2[0].replace("json", "html")
                 url3 = "http://www.raiplay.it/video/" + url2
-                name = Utils.decodeHtml(name)
+                name = html_conv.html_unescape(name)
                 url3 = url3
                 self.names.append(name)
                 self.urls.append(url3)
@@ -879,6 +884,7 @@ class Playstream4(
                                      'EPGSelectActions',
                                      'MediaPlayerSeekActions',
                                      'ColorActions',
+                                     'ButtonSetupActions',
                                      'InfobarShowHideActions',
                                      'InfobarActions',
                                      'InfobarSeekActions'], {'stop': self.cancel,
@@ -893,7 +899,7 @@ class Playstream4(
         self.service = None
         self.url = url
         self.pcip = 'None'
-        self.name = Utils.decodeHtml(name)
+        self.name = html_conv.html_unescape(name)
         self.state = self.STATE_PLAYING
         self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
         if '8088' in str(self.url):
