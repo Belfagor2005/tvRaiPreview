@@ -2890,6 +2890,7 @@ else:
     _terminal_size = collections.namedtuple('terminal_size', ['columns', 'lines'])
 
     def compat_get_terminal_size(fallback=(80, 24)):
+        from .utils import process_communicate_or_kill
         columns = compat_getenv('COLUMNS')
         if columns:
             columns = int(columns)
@@ -2906,7 +2907,7 @@ else:
                 sp = subprocess.Popen(
                     ['stty', 'size'],
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                out, err = sp.communicate()
+                out, err = process_communicate_or_kill(sp)
                 _lines, _columns = map(int, out.split())
             except Exception:
                 _columns, _lines = _terminal_size(*fallback)
@@ -2984,7 +2985,6 @@ except ImportError:
     except ImportError:
         compat_filter = filter
 
-
 try:
     from future_builtins import zip as compat_zip
 except ImportError:  # not 2.6+ or is 3.x
@@ -2993,6 +2993,79 @@ except ImportError:  # not 2.6+ or is 3.x
     except ImportError:
         compat_zip = zip
 
+
+# method renamed between Py2/3
+try:
+    from itertools import zip_longest as compat_itertools_zip_longest
+except ImportError:
+    from itertools import izip_longest as compat_itertools_zip_longest
+
+
+# new class in collections
+try:
+    from collections import ChainMap as compat_collections_chain_map
+    # Py3.3's ChainMap is deficient
+    if sys.version_info < (3, 4):
+        raise ImportError
+except ImportError:
+    # Py <= 3.3
+    class compat_collections_chain_map(compat_collections_abc.MutableMapping):
+
+        maps = [{}]
+
+        def __init__(self, *maps):
+            self.maps = list(maps) or [{}]
+
+        def __getitem__(self, k):
+            for m in self.maps:
+                if k in m:
+                    return m[k]
+            raise KeyError(k)
+
+        def __setitem__(self, k, v):
+            self.maps[0].__setitem__(k, v)
+            return
+
+        def __contains__(self, k):
+            return any((k in m) for m in self.maps)
+
+        def __delitem(self, k):
+            if k in self.maps[0]:
+                del self.maps[0][k]
+                return
+            raise KeyError(k)
+
+        def __delitem__(self, k):
+            self.__delitem(k)
+
+        def __iter__(self):
+            return itertools.chain(*reversed(self.maps))
+
+        def __len__(self):
+            return len(iter(self))
+
+        # to match Py3, don't del directly
+        def pop(self, k, *args):
+            if self.__contains__(k):
+                off = self.__getitem__(k)
+                self.__delitem(k)
+                return off
+            elif len(args) > 0:
+                return args[0]
+            raise KeyError(k)
+
+        def new_child(self, m=None, **kwargs):
+            m = m or {}
+            m.update(kwargs)
+            return compat_collections_chain_map(m, *self.maps)
+
+        @property
+        def parents(self):
+            return compat_collections_chain_map(*(self.maps[1:]))
+
+
+# Pythons disagree on the type of a pattern (RegexObject, _sre.SRE_Pattern, Pattern, ...?)
+compat_re_Pattern = type(re.compile(''))
 
 if sys.version_info < (3, 3):
     def compat_b64decode(s, *args, **kwargs):
@@ -3030,6 +3103,7 @@ __all__ = [
     'compat_basestring',
     'compat_chr',
     'compat_collections_abc',
+    'compat_collections_chain_map',
     'compat_cookiejar',
     'compat_cookiejar_Cookie',
     'compat_cookies',
@@ -3050,6 +3124,7 @@ __all__ = [
     'compat_input',
     'compat_integer_types',
     'compat_itertools_count',
+    'compat_itertools_zip_longest',
     'compat_kwargs',
     'compat_map',
     'compat_numeric_types',
@@ -3057,6 +3132,7 @@ __all__ = [
     'compat_os_name',
     'compat_parse_qs',
     'compat_print',
+    'compat_re_Pattern',
     'compat_realpath',
     'compat_setenv',
     'compat_shlex_quote',

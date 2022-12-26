@@ -725,6 +725,7 @@ def RequestAgent():
     RandomAgent = choice(ListAgent)
     return RandomAgent
 
+
 def AdultUrl(url):
     import sys
     if sys.version_info.major == 3:
@@ -744,6 +745,7 @@ def AdultUrl(url):
         except Exception as e:
             print('error: ', str(e))
     return tlink
+
 
 def ReadUrl2(url):
     if sys.version_info.major == 3:
@@ -825,7 +827,9 @@ def ReadUrl(url):
         link = None
     return link
 
-#ssl_urlopen
+# ssl_urlopen
+
+
 if PY3:
     def getUrl(url):
         req = Request(url)
@@ -1211,9 +1215,9 @@ def charRemove(text):
             "[",
             "]", ]
 
-    myreplace = text  #.lower()
-    for ch in char:  #.lower():
-        # ch = ch  #.lower()
+    myreplace = text  # .lower()
+    for ch in char:  # .lower():
+        # ch = ch  # .lower()
         if text == ch:
             myreplace = text.replace(ch, "").replace("  ", " ").replace("   ", " ").strip()
     print('myreplace: ', myreplace)
@@ -1224,9 +1228,9 @@ def clean_html(html):
     """Clean an HTML snippet into a readable string"""
     import xml.sax.saxutils as saxutils
     # saxutils.unescape("Suzy &amp; John")
-    if type(html) == type(u''):
+    if isinstance(type(html), type(u'')):
         strType = 'unicode'
-    elif type(html) == type(''):
+    elif isinstance(type(html), type('')):
         strType = 'utf-8'
         html = html.decode("utf-8", 'ignore')
     # Newline vs <br />

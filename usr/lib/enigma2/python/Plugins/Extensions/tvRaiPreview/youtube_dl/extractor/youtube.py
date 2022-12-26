@@ -499,7 +499,7 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
         r'/(?P<id>[a-zA-Z0-9_-]{8,})/player(?:_ias\.vflset(?:/[a-zA-Z]{2,3}_[a-zA-Z]{2,3})?|-plasma-ias-(?:phone|tablet)-[a-z]{2}_[A-Z]{2}\.vflset)/base\.js$',
         r'\b(?P<id>vfl[a-zA-Z0-9_-]+)\b.*?\.js$',
     )
-    _SUBTITLE_FORMATS = ('srv1', 'srv2', 'srv3', 'ttml', 'vtt')
+    _SUBTITLE_FORMATS = ('json3', 'srv1', 'srv2', 'srv3', 'ttml', 'vtt')
 
     _GEO_BYPASS = False
 
@@ -1464,16 +1464,22 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
     # 2. https://code.videolan.org/videolan/vlc/-/blob/4fb284e5af69aa9ac2100ccbdd3b88debec9987f/share/lua/playlist/youtube.lua#L116
     # 3. https://github.com/ytdl-org/youtube-dl/issues/30097#issuecomment-950157377
     def _extract_n_function_name(self, jscode):
-        target = r'(?P<nfunc>[a-zA-Z0-9$]{3})(?:\[(?P<idx>\d+)\])?'
+        target = r'(?P<nfunc>[a-zA-Z_$][\w$]*)(?:\[(?P<idx>\d+)\])?'
         nfunc_and_idx = self._search_regex(
-            r'\.get\("n"\)\)&&\(b=(%s)\([a-zA-Z0-9]\)' % (target, ),
+            r'\.get\("n"\)\)&&\(b=(%s)\([\w$]+\)' % (target, ),
             jscode, 'Initial JS player n function name')
         nfunc, idx = re.match(target, nfunc_and_idx).group('nfunc', 'idx')
         if not idx:
             return nfunc
+        if int_or_none(idx) == 0:
+            real_nfunc = self._search_regex(
+                r'var %s\s*=\s*\[([a-zA-Z_$][\w$]*)\];' % (re.escape(nfunc), ), jscode,
+                'Initial JS player n function alias ({nfunc}[{idx}])'.format(**locals()))
+            if real_nfunc:
+                return real_nfunc
         return self._parse_json(self._search_regex(
-            r'var %s\s*=\s*(\[.+?\]);' % (nfunc, ), jscode,
-            'Initial JS player n function list ({nfunc}[{idx}])'.format(**locals())), nfunc, transform_source=js_to_json)[int(idx)]
+            r'var %s\s*=\s*(\[.+?\]);' % (re.escape(nfunc), ), jscode,
+            'Initial JS player n function name ({nfunc}[{idx}])'.format(**locals())), nfunc, transform_source=js_to_json)[int(idx)]
 
     def _extract_n_function(self, video_id, player_url):
         player_id = self._extract_player_info(player_url)
@@ -1482,7 +1488,6 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
         if func_code:
             jsi = JSInterpreter(func_code)
         else:
-            player_id = self._extract_player_info(player_url)
             jscode = self._get_player_code(video_id, player_url, player_id)
             funcname = self._extract_n_function_name(jscode)
             jsi = JSInterpreter(jscode)
@@ -1495,7 +1500,8 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
         return lambda s: jsi.extract_function_from_code(*func_code)([s])
 
     def _n_descramble(self, n_param, player_url, video_id):
-        """Compute the response to YT's "n" parameter challenge
+        """Compute the response to YT's "n" parameter challenge,
+           or None
 
         Args:
         n_param     -- challenge string that is the value of the
@@ -1513,7 +1519,10 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
             if player_id not in self._player_cache:
                 self._player_cache[player_id] = self._extract_n_function(video_id, player_url)
             func = self._player_cache[player_id]
-            self._player_cache[sig_id] = func(n_param)
+            ret = func(n_param)
+            if ret.startswith('enhanced_except_'):
+                raise ExtractorError('Unhandled exception in decode')
+            self._player_cache[sig_id] = ret
             if self._downloader.params.get('verbose', False):
                 self._downloader.to_screen('[debug] [%s] %s' % (self.IE_NAME, 'Decrypted nsig {0} => {1}'.format(n_param, self._player_cache[sig_id])))
             return self._player_cache[sig_id]
@@ -1534,10 +1543,12 @@ class YoutubeIE(YoutubeBaseInfoExtractor):
                 continue
             n_param = n_param[-1]
             n_response = self._n_descramble(n_param, player_url, video_id)
-            if n_response:
-                qs['n'] = [n_response]
-                fmt['url'] = compat_urlparse.urlunparse(
-                    parsed_fmt_url._replace(query=compat_urllib_parse_urlencode(qs, True)))
+            if n_response is None:
+                # give up if descrambling failed
+                break
+            qs['n'] = [n_response]
+            fmt['url'] = compat_urlparse.urlunparse(
+                parsed_fmt_url._replace(query=compat_urllib_parse_urlencode(qs, True)))
 
     def _mark_watched(self, video_id, player_response):
         playback_url = url_or_none(try_get(
