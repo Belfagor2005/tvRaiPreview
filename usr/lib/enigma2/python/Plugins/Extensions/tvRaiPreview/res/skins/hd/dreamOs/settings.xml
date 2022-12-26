@@ -13,4 +13,5 @@
 	<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/res/pics/key_green.png" position="146,670" size="20,20" alphatest="blend" zPosition="5"/>
 	<widget name="key_red" position="180,626" size="200,26" font="Regular;20" halign="left" valign="center" backgroundColor="#20000000" zPosition="5" transparent="1"/>
 	<widget name="key_green" position="180,666" size="200,26" font="Regular;20" halign="left" valign="center" backgroundColor="#20000000" zPosition="5" transparent="1"/>
+	<widget name="key_yellow" position="180,696" size="200,26" font="Regular;20" halign="left" valign="center" backgroundColor="#20000000" zPosition="5" transparent="1"/>
 </screen>
