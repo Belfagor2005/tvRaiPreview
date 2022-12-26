@@ -4,7 +4,6 @@
 '''
 ****************************************
 *        coded by Lululla              *
-*                                      *
 *             02/08/2022               *
 *       Skin by MMark                  *
 ****************************************
@@ -12,6 +11,9 @@
 Info http://t.me/tivustream
 '''
 from __future__ import print_function
+# from Components.Pixmap import Pixmap
+from . import Utils
+from . import html_conv
 from Components.AVSwitch import AVSwitch
 from Components.ActionMap import ActionMap
 from Components.Button import Button
@@ -19,13 +21,13 @@ from Components.Label import Label
 from Components.MenuList import MenuList
 from Components.MultiContent import MultiContentEntryPixmapAlphaTest
 from Components.MultiContent import MultiContentEntryText
-# from Components.Pixmap import Pixmap
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
 from Screens.InfoBar import InfoBar
 from Screens.InfoBar import MoviePlayer
-from Screens.InfoBarGenerics import InfoBarSeek, InfoBarAudioSelection, InfoBarNotifications
+from Screens.InfoBarGenerics import InfoBarNotifications
+from Screens.InfoBarGenerics import InfoBarSeek, InfoBarAudioSelection
 from Screens.InfoBarGenerics import InfoBarSubtitleSupport, InfoBarMenu
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
@@ -44,8 +46,6 @@ import re
 import six
 import ssl
 import sys
-from . import Utils
-from . import html_conv
 global skin_path, pluglogo, pngx, pngl, pngs
 
 PY3 = sys.version_info.major >= 3
@@ -766,111 +766,22 @@ class tvRai4(Screen):
 rai end
 '''
 
-
-class TvInfoBarShowHide():
-    """ InfoBar show/hide control, accepts toggleShow and hide actions, might start
-    fancy animations. """
-    STATE_HIDDEN = 0
-    STATE_HIDING = 1
-    STATE_SHOWING = 2
-    STATE_SHOWN = 3
-    skipToggleShow = False
-
-    def __init__(self):
-        self["ShowHideActions"] = ActionMap(["InfobarShowHideActions"], {"toggleShow": self.OkPressed, "hide": self.hide}, 0)
-        self.__event_tracker = ServiceEventTracker(screen=self, eventmap={iPlayableService.evStart: self.serviceStarted})
-        self.__state = self.STATE_SHOWN
-        self.__locked = 0
-        self.hideTimer = eTimer()
-        try:
-            self.hideTimer_conn = self.hideTimer.timeout.connect(self.doTimerHide)
-        except:
-            self.hideTimer.callback.append(self.doTimerHide)
-        self.hideTimer.start(5000, True)
-        self.onShow.append(self.__onShow)
-        self.onHide.append(self.__onHide)
-
-    def OkPressed(self):
-        self.toggleShow()
-
-    def toggleShow(self):
-        if self.skipToggleShow:
-            self.skipToggleShow = False
-            return
-        if self.__state == self.STATE_HIDDEN:
-            self.show()
-            self.hideTimer.stop()
-        else:
-            self.hide()
-            self.startHideTimer()
-
-    def serviceStarted(self):
-        if self.execing:
-            if config.usage.show_infobar_on_zap.value:
-
-                self.doShow()
-
-    def __onShow(self):
-        self.__state = self.STATE_SHOWN
-        self.startHideTimer()
-
-    def startHideTimer(self):
-        if self.__state == self.STATE_SHOWN and not self.__locked:
-            self.hideTimer.stop()
-            idx = config.usage.infobar_timeout.index
-            if idx:
-                self.hideTimer.start(idx * 1500, True)
-
-    def __onHide(self):
-        self.__state = self.STATE_HIDDEN
-
-    def doShow(self):
-        self.hideTimer.stop()
-        self.show()
-        self.startHideTimer()
-
-    def doTimerHide(self):
-        self.hideTimer.stop()
-        if self.__state == self.STATE_SHOWN:
-            self.hide()
-
-    def lockShow(self):
-        try:
-            self.__locked += 1
-        except:
-            self.__locked = 0
-        if self.execing:
-            self.show()
-            self.hideTimer.stop()
-            self.skipToggleShow = False
-
-    def unlockShow(self):
-        try:
-            self.__locked -= 1
-        except:
-            self.__locked = 0
-        if self.__locked < 0:
-            self.__locked = 0
-        if self.execing:
-            self.startHideTimer()
-
-    def debug(obj, text=""):
-        print(text + " %s\n" % obj)
-
-
 class Playstream1(Screen):
     def __init__(self, session, name, url):
+        Screen.__init__(self, session)
         self.session = session
         skin = skin_path + 'Playstream1.xml'
         with open(skin, 'r') as f:
             self.skin = f.read()
+        print('self.skin: ', skin)
+        f.close()
         self.setup_title = ('TiVuDream')
-        Screen.__init__(self, session)
+
         self.setTitle(desc_plugin)
         self.list = []
         self['list'] = SetList([])
-        self['info'] = Label('Select Player')
-        self['key_red'] = Button(_('Exit'))
+        self['info'] = Label('Select Player Stream')
+        self['key_red'] = Button(_('Back'))
         self['key_green'] = Button(_('Select'))
         self['actions'] = ActionMap(['OkCancelActions',
                                      'ColorActions',
@@ -900,18 +811,16 @@ class Playstream1(Screen):
 
     def okClicked(self):
         idx = self['list'].getSelectionIndex()
+        self.name = self.names[idx]
+        self.url = self.urls[idx]
         if idx != '':
             self.name = self.names[idx]
             self.url = self.urls[idx]
             if idx == 0:
-                self.name = self.names[idx]
-                self.url = self.urls[idx]
                 print('In playVideo url D=', self.url)
                 self.play()
             elif idx == 1:
                 print('In playVideo url B=', self.url)
-                self.name = self.names[idx]
-                self.url = self.urls[idx]
                 try:
                     os.remove('/tmp/hls.avi')
                 except:
@@ -940,8 +849,6 @@ class Playstream1(Screen):
                 self.play()
             # preview
             elif idx == 3:
-                self.name = self.names[idx]
-                self.url = self.urls[idx]
                 print('In playVideo url D=', self.url)
                 self.play2()
             else:
@@ -963,6 +870,7 @@ class Playstream1(Screen):
 
     def play2(self):
         self['info'].setText(self.name)
+        desc = self.desc
         url = self.url
         url = url.replace(':', '%3a')
         print('In url =', url)
@@ -976,6 +884,98 @@ class Playstream1(Screen):
         self.session.nav.stopService()
         self.session.nav.playService(SREF)
         self.close()
+
+
+class TvInfoBarShowHide():
+    """ InfoBar show/hide control, accepts toggleShow and hide actions, might start
+    fancy animations. """
+    STATE_HIDDEN = 0
+    STATE_HIDING = 1
+    STATE_SHOWING = 2
+    STATE_SHOWN = 3
+    skipToggleShow = False
+
+    def __init__(self):
+        self["ShowHideActions"] = ActionMap(["InfobarShowHideActions"], {"toggleShow": self.OkPressed, "hide": self.hide}, 1)
+        self.__event_tracker = ServiceEventTracker(screen=self, eventmap={
+            iPlayableService.evStart: self.serviceStarted,
+        })
+        self.__state = self.STATE_SHOWN
+        self.__locked = 0
+        self.hideTimer = eTimer()
+        try:
+            self.hideTimer_conn = self.hideTimer.timeout.connect(self.doTimerHide)
+        except:
+            self.hideTimer.callback.append(self.doTimerHide)
+        self.hideTimer.start(5000, True)
+        self.onShow.append(self.__onShow)
+        self.onHide.append(self.__onHide)
+
+    def OkPressed(self):
+        self.toggleShow()
+
+    def __onShow(self):
+        self.__state = self.STATE_SHOWN
+        self.startHideTimer()
+
+    def __onHide(self):
+        self.__state = self.STATE_HIDDEN
+
+    def serviceStarted(self):
+        if self.execing:
+            if config.usage.show_infobar_on_zap.value:
+                self.doShow()
+
+    def startHideTimer(self):
+        if self.__state == self.STATE_SHOWN and not self.__locked:
+            self.hideTimer.stop()
+            idx = config.usage.infobar_timeout.index
+            if idx:
+                self.hideTimer.start(idx * 1500, True)
+
+    def doShow(self):
+        self.hideTimer.stop()
+        self.show()
+        self.startHideTimer()
+
+    def doTimerHide(self):
+        self.hideTimer.stop()
+        if self.__state == self.STATE_SHOWN:
+            self.hide()
+
+    def toggleShow(self):
+        if self.skipToggleShow:
+            self.skipToggleShow = False
+            return
+        if self.__state == self.STATE_HIDDEN:
+            self.show()
+            self.hideTimer.stop()
+        else:
+            self.hide()
+            self.startHideTimer()
+
+    def lockShow(self):
+        try:
+            self.__locked += 1
+        except:
+            self.__locked = 0
+        if self.execing:
+            self.show()
+            self.hideTimer.stop()
+            self.skipToggleShow = False
+
+    def unlockShow(self):
+        try:
+            self.__locked -= 1
+        except:
+            self.__locked = 0
+        if self.__locked < 0:
+            self.__locked = 0
+        if self.execing:
+            self.startHideTimer()
+
+    def debug(obj, text=""):
+        print(text + " %s\n" % obj)
 
 
 class Playstream2(
@@ -997,11 +997,11 @@ class Playstream2(
 
     def __init__(self, session, name, url):
         global streaml
+        global _session
         Screen.__init__(self, session)
         self.session = session
-        global _session
-        _session = session
         self.skinName = 'MoviePlayer'
+        _session = session
         streaml = False
         for x in InfoBarBase, \
                 InfoBarMenu, \
@@ -1025,18 +1025,17 @@ class Playstream2(
                                      'ButtonSetupActions',
                                      'InfobarShowHideActions',
                                      'InfobarActions',
-                                     'InfobarSeekActions'], {'stop': self.leavePlayer,
+                                     'InfobarSeekActions'], {'leavePlayer': self.cancel,
                                                              'epg': self.showIMDB,
                                                              'info': self.showIMDB,
                                                              # 'info': self.cicleStreamType,
                                                              'tv': self.cicleStreamType,
                                                              # 'stop': self.leavePlayer,
+                                                             'red': self.cicleStreamType,
                                                              'cancel': self.cancel,
                                                              'back': self.cancel}, -1)
-        self.allowPiP = False
         self.service = None
         self.url = url
-        self.pcip = 'None'
         self.name = html_conv.html_unescape(name)
         self.state = self.STATE_PLAYING
         self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -1115,9 +1114,10 @@ class Playstream2(
         streaml = False
         from itertools import cycle, islice
         self.servicetype = '4097'
+        # self.servicetype = str(config.plugins.revolution.services.value)
         print('servicetype1: ', self.servicetype)
         url = str(self.url)
-        if str(os.path.splitext(self.url)[-1]) == ".m3u8":
+        if str(os.path.splitext(url)[-1]) == ".m3u8":
             if self.servicetype == "1":
                 self.servicetype = "4097"
         currentindex = 0
@@ -1167,7 +1167,7 @@ class Playstream2(
             self.doShow()
 
     def cancel(self):
-        if os.path.isfile('/tmp/hls.avi'):
+        if os.path.exists('/tmp/hls.avi'):
             os.remove('/tmp/hls.avi')
         self.session.nav.stopService()
         self.session.nav.playService(self.srefInit)
