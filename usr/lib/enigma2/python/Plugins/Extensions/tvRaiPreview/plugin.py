@@ -46,7 +46,7 @@ import re
 import six
 import ssl
 import sys
-global skin_path, pluglogo, pngx, pngl, pngs
+global skin_path, pngx, pngl, pngs
 
 PY3 = sys.version_info.major >= 3
 print('Py3: ', PY3)
@@ -88,30 +88,30 @@ else:
 
 
 currversion = '1.2'
-plugin_path = os.path.dirname(sys.modules[__name__].__file__)
-pluglogo = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('logo.png'))
-pngx = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugins.png'))
-pngl = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('plugin.png'))
-pngs = resolveFilename(SCOPE_PLUGINS, "Extensions/tvRaiPreview/res/pics/{}".format('setting.png'))
+plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview'
+pluglogo = os.path.join(plugin_path, "res/pics/logo.png")
+pngx = os.path.join(plugin_path, "res/pics/plugins.png")
+pngl = os.path.join(plugin_path, "res/pics/plugin.png")
+pngs = os.path.join(plugin_path, "res/pics/setting.png")
 desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion
 name_plugin = 'TiVu Rai Preview'
 
-skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/hd/".format('tvRaiPreview'))
+skin_path = os.path.join(plugin_path, "res/skins/hd/")
 if Utils.isFHD():
-    skin_path = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/skins/fhd/".format('tvRaiPreview'))
+    skin_path = os.path.join(plugin_path, "res/skins/fhd/")
 if Utils.DreamOS():
     skin_path = skin_path + "dreamOs/"
 
 
 class SetList(MenuList):
     def __init__(self, list):
-        MenuList.__init__(self, list, False, eListboxPythonMultiContent)
+        MenuList.__init__(self, list, True, eListboxPythonMultiContent)
         if Utils.isFHD():
             self.l.setItemHeight(50)
-            textfont = int(34)
+            textfont = int(30)
             self.l.setFont(0, gFont('Regular', textfont))
         else:
-            self.l.setItemHeight(50)
+            self.l.setItemHeight(30)
             textfont = int(24)
             self.l.setFont(0, gFont('Regular', textfont))
 
@@ -119,11 +119,11 @@ class SetList(MenuList):
 def OneSetListEntry(name):
     res = [name]
     if Utils.isFHD():
-        res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
-        res.append(MultiContentEntryText(pos=(60, 0), size=(1900, 50), font=0, text=name, color=0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+        res.append(MultiContentEntryPixmapAlphaTest(pos=(5, 5), size=(40, 40), png=loadPNG(pngx)))
+        res.append(MultiContentEntryText(pos=(70, 0), size=(1000, 50), font=0, text=name, color=0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     else:
-        res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 12), size=(34, 25), png=loadPNG(pngx)))
-        res.append(MultiContentEntryText(pos=(60, 0), size=(1000, 50), font=0, text=name, color=0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+        res.append(MultiContentEntryPixmapAlphaTest(pos=(3, 3), size=(30, 30), png=loadPNG(pngx)))
+        res.append(MultiContentEntryText(pos=(50, 0), size=(500, 50), font=0, text=name, color=0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     return res
 
 
@@ -133,7 +133,7 @@ def showlist(data, list):
     for line in data:
         name = data[icount]
         plist.append(OneSetListEntry(name))
-        icount = icount+1
+        icount += 1
         list.setList(plist)
 
 
@@ -171,7 +171,7 @@ tgrRai start
 class tgrRai(Screen):
     def __init__(self, session):
         self.session = session
-        skin = skin_path + 'settings.xml'
+        skin = os.path.join(skin_path, 'settings.xml')
         with open(skin, 'r') as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
@@ -264,7 +264,7 @@ class tgrRai(Screen):
 class tgrRai2(Screen):
     def __init__(self, session, name, url):
         self.session = session
-        skin = skin_path + 'settings.xml'
+        skin = os.path.join(skin_path, 'settings.xml')
         with open(skin, 'r') as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
@@ -353,7 +353,7 @@ class tgrRai2(Screen):
 class tgrRai3(Screen):
     def __init__(self, session, name, url):
         self.session = session
-        skin = skin_path + 'settings.xml'
+        skin = os.path.join(skin_path, 'settings.xml')
         with open(skin, 'r') as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
@@ -442,7 +442,7 @@ class tgrRai3(Screen):
 class tvRai2(Screen):
     def __init__(self, session, name, url):
         self.session = session
-        skin = skin_path + 'settings.xml'
+        skin = os.path.join(skin_path, 'settings.xml')
         with open(skin, 'r') as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
@@ -578,7 +578,7 @@ class tvRai2(Screen):
 class tvRai3(Screen):
     def __init__(self, session, name, url):
         self.session = session
-        skin = skin_path + 'settings.xml'
+        skin = os.path.join(skin_path, 'settings.xml')
         with open(skin, 'r') as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
@@ -766,125 +766,6 @@ class tvRai4(Screen):
 rai end
 '''
 
-class Playstream1(Screen):
-    def __init__(self, session, name, url):
-        Screen.__init__(self, session)
-        self.session = session
-        skin = skin_path + 'Playstream1.xml'
-        with open(skin, 'r') as f:
-            self.skin = f.read()
-        print('self.skin: ', skin)
-        f.close()
-        self.setup_title = ('TiVuDream')
-
-        self.setTitle(desc_plugin)
-        self.list = []
-        self['list'] = SetList([])
-        self['info'] = Label('Select Player Stream')
-        self['key_red'] = Button(_('Back'))
-        self['key_green'] = Button(_('Select'))
-        self['actions'] = ActionMap(['OkCancelActions',
-                                     'ColorActions',
-                                     'DirectionActions'], {'red': self.cancel,
-                                                           'green': self.okClicked,
-                                                           'back': self.cancel,
-                                                           'cancel': self.cancel,
-                                                           'ok': self.okClicked}, -2)
-        self.name1 = name
-        self.url = url
-        print('In Playstream2 self.url =', url)
-        global SREF
-        SREF = self.session.nav.getCurrentlyPlayingServiceReference()
-        self.onLayoutFinish.append(self.openTest)
-
-    def openTest(self):
-        url = self.url
-        self.names = []
-        self.urls = []
-        self.names.append('Play Direct')
-        self.urls.append(url)
-        self.names.append('Play Hls')
-        self.urls.append(url)
-        self.names.append('Play Ts')
-        self.urls.append(url)
-        showlist(self.names, self['list'])
-
-    def okClicked(self):
-        idx = self['list'].getSelectionIndex()
-        self.name = self.names[idx]
-        self.url = self.urls[idx]
-        if idx != '':
-            self.name = self.names[idx]
-            self.url = self.urls[idx]
-            if idx == 0:
-                print('In playVideo url D=', self.url)
-                self.play()
-            elif idx == 1:
-                print('In playVideo url B=', self.url)
-                try:
-                    os.remove('/tmp/hls.avi')
-                except:
-                    pass
-                header = ''
-                cmd = 'python "/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/lib/hlsclient.py" "' + self.url + '" "1" "' + header + '" + &'
-                print('In playVideo cmd =', cmd)
-                os.system(cmd)
-                os.system('sleep 3')
-                self.url = '/tmp/hls.avi'
-                self.play()
-            elif idx == 2:
-                print('In playVideo url A=', self.url)
-                url = self.url
-                try:
-                    os.remove('/tmp/hls.avi')
-                except:
-                    pass
-
-                cmd = 'python "/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/lib/tsclient.py" "' + url + '" "1" + &'
-                print('ts cmd = ', cmd)
-                os.system(cmd)
-                os.system('sleep 3')
-                self.url = '/tmp/hls.avi'
-                self.name = self.names[idx]
-                self.play()
-            # preview
-            elif idx == 3:
-                print('In playVideo url D=', self.url)
-                self.play2()
-            else:
-                self.name = self.names[idx]
-                self.url = self.urls[idx]
-                print('In playVideo url D=', self.url)
-                self.play()
-            return
-        else:
-            return
-
-    def playfile(self, serverint):
-        self.serverList[serverint].play(self.session, self.url, self.name)
-
-    def play(self):
-        url = self.url
-        name = self.name
-        self.session.open(Playstream2, name, url)
-
-    def play2(self):
-        self['info'].setText(self.name)
-        desc = self.desc
-        url = self.url
-        url = url.replace(':', '%3a')
-        print('In url =', url)
-        ref = '4097:0:1:0:0:0:0:0:0:0:' + url
-        sref = eServiceReference(ref)
-        print('SREF: ', sref)
-        sref.setName(self.name)
-        self.session.nav.playService(sref)
-
-    def cancel(self):
-        self.session.nav.stopService()
-        self.session.nav.playService(SREF)
-        self.close()
-
 
 class TvInfoBarShowHide():
     """ InfoBar show/hide control, accepts toggleShow and hide actions, might start
@@ -896,9 +777,13 @@ class TvInfoBarShowHide():
     skipToggleShow = False
 
     def __init__(self):
-        self["ShowHideActions"] = ActionMap(["InfobarShowHideActions"], {"toggleShow": self.OkPressed, "hide": self.hide}, 1)
+        self["ShowHideActions"] = ActionMap(["InfobarShowHideActions"], {
+            "toggleShow": self.OkPressed,
+            "hide": self.hide
+        }, 0)
+
         self.__event_tracker = ServiceEventTracker(screen=self, eventmap={
-            iPlayableService.evStart: self.serviceStarted,
+            iPlayableService.evStart: self.serviceStarted
         })
         self.__state = self.STATE_SHOWN
         self.__locked = 0
@@ -914,35 +799,6 @@ class TvInfoBarShowHide():
     def OkPressed(self):
         self.toggleShow()
 
-    def __onShow(self):
-        self.__state = self.STATE_SHOWN
-        self.startHideTimer()
-
-    def __onHide(self):
-        self.__state = self.STATE_HIDDEN
-
-    def serviceStarted(self):
-        if self.execing:
-            if config.usage.show_infobar_on_zap.value:
-                self.doShow()
-
-    def startHideTimer(self):
-        if self.__state == self.STATE_SHOWN and not self.__locked:
-            self.hideTimer.stop()
-            idx = config.usage.infobar_timeout.index
-            if idx:
-                self.hideTimer.start(idx * 1500, True)
-
-    def doShow(self):
-        self.hideTimer.stop()
-        self.show()
-        self.startHideTimer()
-
-    def doTimerHide(self):
-        self.hideTimer.stop()
-        if self.__state == self.STATE_SHOWN:
-            self.hide()
-
     def toggleShow(self):
         if self.skipToggleShow:
             self.skipToggleShow = False
@@ -953,6 +809,35 @@ class TvInfoBarShowHide():
         else:
             self.hide()
             self.startHideTimer()
+
+    def serviceStarted(self):
+        if self.execing:
+            if config.usage.show_infobar_on_zap.value:
+                self.doShow()
+
+    def __onShow(self):
+        self.__state = self.STATE_SHOWN
+        self.startHideTimer()
+
+    def startHideTimer(self):
+        if self.__state == self.STATE_SHOWN and not self.__locked:
+            # self.hideTimer.stop()
+            idx = config.usage.infobar_timeout.index
+            if idx:
+                self.hideTimer.start(idx * 1500, True)
+
+    def __onHide(self):
+        self.__state = self.STATE_HIDDEN
+
+    def doShow(self):
+        self.hideTimer.stop()
+        self.show()
+        self.startHideTimer()
+
+    def doTimerHide(self):
+        self.hideTimer.stop()
+        if self.__state == self.STATE_SHOWN:
+            self.hide()
 
     def lockShow(self):
         try:
@@ -978,95 +863,210 @@ class TvInfoBarShowHide():
         print(text + " %s\n" % obj)
 
 
-class Playstream2(
-                  InfoBarBase,
-                  InfoBarMenu,
-                  InfoBarSeek,
-                  InfoBarAudioSelection,
-                  InfoBarSubtitleSupport,
-                  InfoBarNotifications,
-                  TvInfoBarShowHide,
-                  Screen
-                  ):
-    STATE_IDLE = 0
-    STATE_PLAYING = 1
-    STATE_PAUSED = 2
-    ENABLE_RESUME_SUPPORT = True
-    ALLOW_SUSPEND = True
-    screen_timeout = 5000
-
+class Playstream1(Screen):
     def __init__(self, session, name, url):
-        global streaml
-        global _session
         Screen.__init__(self, session)
         self.session = session
-        self.skinName = 'MoviePlayer'
+        global _session
         _session = session
-        streaml = False
-        for x in InfoBarBase, \
-                InfoBarMenu, \
-                InfoBarSeek, \
-                InfoBarAudioSelection, \
-                InfoBarSubtitleSupport, \
-                InfoBarNotifications, \
-                TvInfoBarShowHide:
-            x.__init__(self)
-        try:
-            self.init_aspect = int(self.getAspect())
-        except:
-            self.init_aspect = 0
-        self.new_aspect = self.init_aspect
+
+        skin = os.path.join(skin_path, 'Playstream1.xml')
+        with open(skin, 'r') as f:
+            self.skin = f.read()
+
+        self.setup_title = ('TiVuDream')
+        self.setTitle(desc_plugin)
+        self.list = []
+        self['list'] = SetList([])
+        self['info'] = Label('Select Player Stream')
+        self['key_red'] = Button(_('Back'))
+        self['key_green'] = Button(_('Select'))
         self['actions'] = ActionMap(['MoviePlayerActions',
                                      'MovieSelectionActions',
                                      'MediaPlayerActions',
                                      'EPGSelectActions',
                                      'MediaPlayerSeekActions',
-                                     'ColorActions',
+                                     'DirectionActions',
                                      'ButtonSetupActions',
+                                     'OkCancelActions',
                                      'InfobarShowHideActions',
                                      'InfobarActions',
-                                     'InfobarSeekActions'], {'leavePlayer': self.cancel,
-                                                             'epg': self.showIMDB,
-                                                             'info': self.showIMDB,
-                                                             # 'info': self.cicleStreamType,
-                                                             'tv': self.cicleStreamType,
-                                                             # 'stop': self.leavePlayer,
-                                                             'red': self.cicleStreamType,
+                                     'InfobarSeekActions'], {'red': self.cancel,
+                                                             'green': self.okClicked,
+                                                             'back': self.cancel,
                                                              'cancel': self.cancel,
-                                                             'back': self.cancel}, -1)
-        self.service = None
+                                                             'leavePlayer': self.cancel,
+                                                             # 'yellow': self.taskManager,
+                                                             # 'rec': self.runRec,
+                                                             # 'instantRecord': self.runRec,
+                                                             # 'ShortRecord': self.runRec,
+                                                             'ok': self.okClicked}, -2)
+        self.name1 = name
         self.url = url
-        self.name = html_conv.html_unescape(name)
+        print('In Playstream2 self.url =', url)
+        self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
+        self.onLayoutFinish.append(self.openTest)
+
+    def openTest(self):
+        url = self.url
+        self.names = []
+        self.urls = []
+        self.names.append('Play Direct')
+        self.urls.append(url)
+        self.names.append('Play Hls')
+        self.urls.append(url)
+        self.names.append('Play Ts')
+        self.urls.append(url)
+        showlist(self.names, self['list'])
+
+    def okClicked(self):
+        idx = self['list'].getSelectionIndex()
+        if idx is not None or idx != -1:
+            self.name = self.names[idx]
+            self.url = self.urls[idx]
+            if idx == 0:
+                print('In playVideo url D=', self.url)
+                self.play()
+            elif idx == 1:
+                print('In playVideo url B=', self.url)
+                try:
+                    os.remove('/tmp/hls.avi')
+                except:
+                    pass
+                header = ''
+                cmd = 'python "/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/lib/hlsclient.py" "' + self.url + '" "1" "' + header + '" + &'
+                print('In playVideo cmd =', cmd)
+                os.system(cmd)
+                os.system('sleep 3')
+                self.url = '/tmp/hls.avi'
+                self.play()
+            elif idx == 2:
+                print('In playVideo url A=', self.url)
+                url = self.url
+                try:
+                    os.remove('/tmp/hls.avi')
+                except:
+                    pass
+                cmd = 'python "/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/lib/tsclient.py" "' + url + '" "1" + &'
+                print('ts cmd = ', cmd)
+                os.system(cmd)
+                os.system('sleep 3')
+                self.url = '/tmp/hls.avi'
+                self.play()
+            # preview
+            elif idx == 3:
+                print('In playVideo url D=', self.url)
+                self.play2()
+            else:
+                print('In playVideo url D=', self.url)
+                self.play()
+            return
+
+    def playfile(self, serverint):
+        self.serverList[serverint].play(self.session, self.url, self.name)
+
+    def play(self):
+        url = self.url
+        name = self.name
+        self.session.open(Playstream2, name, url)
+
+    def play2(self):
+        self['info'].setText(self.name)
+        url = self.url
+        url = url.replace(':', '%3a')
+        print('In url =', url)
+        ref = '4097:0:1:0:0:0:0:0:0:0:' + url
+        sref = eServiceReference(ref)
+        print('SREF: ', sref)
+        sref.setName(self.name)
+        self.session.nav.playService(sref)
+
+    def cancel(self):
+        try:
+            self.session.nav.stopService()
+            self.session.nav.playService(self.srefInit)
+            self.close()
+        except:
+            pass
+
+
+class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarAudioSelection, TvInfoBarShowHide, InfoBarSubtitleSupport):
+    STATE_IDLE = 0
+    STATE_PLAYING = 1
+    STATE_PAUSED = 2
+    ENABLE_RESUME_SUPPORT = True
+    ALLOW_SUSPEND = True
+    screen_timeout = 4000
+
+    def __init__(self, session, name, url):
+        global streaml
+
+        Screen.__init__(self, session)
+        self.session = session
+        global _session
+        _session = session
+        self.skinName = 'MoviePlayer'
+
+        streaml = False
+        InfoBarMenu.__init__(self)
+        InfoBarNotifications.__init__(self)
+        InfoBarBase.__init__(self, steal_current_service=True)
+        TvInfoBarShowHide.__init__(self)
+        InfoBarAudioSelection.__init__(self)
+        InfoBarSubtitleSupport.__init__(self)
+        try:
+            self.init_aspect = int(self.getAspect())
+        except:
+            self.init_aspect = 0
+        self.new_aspect = self.init_aspect
+        self['actions'] = ActionMap(['WizardActions', 'MoviePlayerActions', 'MovieSelectionActions', 'MediaPlayerActions', 'EPGSelectActions', 'MediaPlayerSeekActions', 'ColorActions',
+                                     'ButtonSetupActions', 'InfobarShowHideActions', 'InfobarActions', 'InfobarSeekActions'], {
+            'leavePlayer': self.cancel,
+            'epg': self.showIMDB,
+            'info': self.showIMDB,
+            # 'info': self.cicleStreamType,
+            'tv': self.cicleStreamType,
+            'stop': self.leavePlayer,
+            'cancel': self.cancel,
+            'back': self.cancel
+        }, -1)
+        self.allowPiP = False
+        self.service = None
+        InfoBarSeek.__init__(self, actionmap='InfobarSeekActions')
+        self.url = url
+        self.name = name
         self.state = self.STATE_PLAYING
         self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
         if '8088' in str(self.url):
-            # self.onLayoutFinish.append(self.slinkPlay)
             self.onFirstExecBegin.append(self.slinkPlay)
         else:
-            # self.onLayoutFinish.append(self.cicleStreamType)
             self.onFirstExecBegin.append(self.cicleStreamType)
-        self.onClose.append(self.cancel)
+        return
 
     def getAspect(self):
         return AVSwitch().getAspectRatioSetting()
 
     def getAspectString(self, aspectnum):
-        return {0: _('4:3 Letterbox'),
-                1: _('4:3 PanScan'),
-                2: _('16:9'),
-                3: _('16:9 always'),
-                4: _('16:10 Letterbox'),
-                5: _('16:10 PanScan'),
-                6: _('16:9 Letterbox')}[aspectnum]
+        return {
+            0: '4:3 Letterbox',
+            1: '4:3 PanScan',
+            2: '16:9',
+            3: '16:9 always',
+            4: '16:10 Letterbox',
+            5: '16:10 PanScan',
+            6: '16:9 Letterbox'
+        }[aspectnum]
 
     def setAspect(self, aspect):
-        map = {0: '4_3_letterbox',
-               1: '4_3_panscan',
-               2: '16_9',
-               3: '16_9_always',
-               4: '16_10_letterbox',
-               5: '16_10_panscan',
-               6: '16_9_letterbox'}
+        map = {
+            0: '4_3_letterbox',
+            1: '4_3_panscan',
+            2: '16_9',
+            3: '16_9_always',
+            4: '16_10_letterbox',
+            5: '16_10_panscan',
+            6: '16_9_letterbox'
+        }
         config.av.aspectratio.setValue(map[aspect])
         try:
             AVSwitch().setAspectRatio(aspect)
@@ -1075,7 +1075,7 @@ class Playstream2(
 
     def av(self):
         temp = int(self.getAspect())
-        temp = temp + 1
+        temp += 1
         if temp > 6:
             temp = 0
         self.new_aspect = temp
@@ -1086,48 +1086,44 @@ class Playstream2(
         if returnIMDB(text_clear):
             print('show imdb/tmdb')
 
-    def slinkPlay(self, url):
-        name = self.name
-        ref = "{0}:{1}".format(url.replace(":", "%3a"), name.replace(":", "%3a"))
+    def slinkPlay(self):
+        ref = str(self.url)
+        ref = ref.replace(':', '%3a').replace(' ', '%20')
         print('final reference:   ', ref)
         sref = eServiceReference(ref)
-        sref.setName(name)
+        sref.setName(self.name)
         self.session.nav.stopService()
         self.session.nav.playService(sref)
 
     def openTest(self, servicetype, url):
-        name = self.name
-        ref = "{0}:0:0:0:0:0:0:0:0:0:{1}:{2}".format(servicetype, url.replace(":", "%3a"), name.replace(":", "%3a"))
-        print('reference:   ', ref)
+        url = url.replace(':', '%3a').replace(' ', '%20')
+        ref = str(servicetype) + ':0:1:0:0:0:0:0:0:0:' + str(url)
         if streaml is True:
-            url = 'http://127.0.0.1:8088/' + str(url)
-            ref = "{0}:0:1:0:0:0:0:0:0:0:{1}:{2}".format(servicetype, url.replace(":", "%3a"), name.replace(":", "%3a"))
-            print('streaml reference:   ', ref)
-        print('final reference:   ', ref)
+            ref = str(servicetype) + ':0:1:0:0:0:0:0:0:0:http%3a//127.0.0.1%3a8088/' + str(url)
+        print('final reference 2:   ', ref)
         sref = eServiceReference(ref)
-        sref.setName(name)
+        sref.setName(self.name)
         self.session.nav.stopService()
         self.session.nav.playService(sref)
 
     def cicleStreamType(self):
-        global streml
-        streaml = False
+        global streaml
         from itertools import cycle, islice
         self.servicetype = '4097'
         # self.servicetype = str(config.plugins.revolution.services.value)
         print('servicetype1: ', self.servicetype)
         url = str(self.url)
-        if str(os.path.splitext(url)[-1]) == ".m3u8":
-            if self.servicetype == "1":
-                self.servicetype = "4097"
+        # if str(os.path.splitext(url)[-1]) == ".m3u8":
+            # if self.servicetype == "1":
+                # self.servicetype = "4097"
         currentindex = 0
         streamtypelist = ["4097"]
         # if "youtube" in str(self.url):
             # self.mbox = self.session.open(MessageBox, _('For Stream Youtube coming soon!'), MessageBox.TYPE_INFO, timeout=5)
             # return
-        if Utils.isStreamlinkAvailable():
-            streamtypelist.append("5002")
-            streaml = True
+        # if Utils.isStreamlinkAvailable():
+            # streamtypelist.append("5002")
+            # streaml = True
         # if os.path.exists("/usr/bin/gstplayer"):
             # streamtypelist.append("5001")
         # if os.path.exists("/usr/bin/exteplayer3"):
@@ -1142,18 +1138,6 @@ class Playstream2(
         self.servicetype = str(next(nextStreamType))
         print('servicetype2: ', self.servicetype)
         self.openTest(self.servicetype, url)
-
-    def up(self):
-        pass
-
-    def down(self):
-        self.up()
-
-    def doEofInternal(self, playing):
-        self.close()
-
-    def __evEOF(self):
-        self.end = True
 
     def showVideoInfo(self):
         if self.shown:
