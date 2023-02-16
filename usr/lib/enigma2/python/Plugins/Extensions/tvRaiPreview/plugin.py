@@ -48,12 +48,14 @@ import ssl
 import sys
 global skin_path, pngx, pngl, pngs
 
+PY3 = False
 PY3 = sys.version_info.major >= 3
 print('Py3: ', PY3)
 
 if PY3:
     from urllib.request import urlopen
     # from urllib.request import Request
+    PY3 = True
 else:
     # from urllib2 import Request
     from urllib2 import urlopen
@@ -100,7 +102,7 @@ skin_path = os.path.join(plugin_path, "res/skins/hd/")
 if Utils.isFHD():
     skin_path = os.path.join(plugin_path, "res/skins/fhd/")
 if Utils.DreamOS():
-    skin_path = skin_path + "dreamOs/"
+    skin_path = os.path.join(skin_path, "dreamOs/")
 
 
 class SetList(MenuList):
@@ -140,27 +142,26 @@ def showlist(data, list):
 def returnIMDB(text_clear):
     TMDB = resolveFilename(SCOPE_PLUGINS, "Extensions/{}".format('TMDB'))
     IMDb = resolveFilename(SCOPE_PLUGINS, "Extensions/{}".format('IMDb'))
-    if TMDB:
+    if os.path.exists(TMDB):
         try:
             from Plugins.Extensions.TMBD.plugin import TMBD
             text = html_conv.html_unescape(text_clear)
             _session.open(TMBD.tmdbScreen, text, 0)
-        except Exception as ex:
-            print("[XCF] Tmdb: ", str(ex))
+        except Exception as e:
+            print("[XCF] Tmdb: ", str(e))
         return True
-    elif IMDb:
+    elif os.path.exists(IMDb):
         try:
             from Plugins.Extensions.IMDb.plugin import main as imdb
             text = html_conv.html_unescape(text_clear)
             imdb(_session, text)
-        except Exception as ex:
-            print("[XCF] imdb: ", str(ex))
+        except Exception as e:
+            print("[XCF] imdb: ", str(e))
         return True
     else:
         text_clear = html_conv.html_unescape(text_clear)
         _session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)
         return True
-    return
 
 
 '''
@@ -478,12 +479,10 @@ class tvRai2(Screen):
         url = self.url
         name = self.name
         content = Utils.getUrl(url)
-
         if PY3:
             content = six.ensure_str(content)
         print(content)
         items = []
-
         # i = 0
         # while i < 10:
         try:
@@ -595,7 +594,6 @@ class tvRai3(Screen):
         self['key_yellow'] = Button(_(''))
         self['key_yellow'].hide()
         self.timer = eTimer()
-
         if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
@@ -612,7 +610,6 @@ class tvRai3(Screen):
     def _gotPageLoad(self):
         self.names = []
         self.urls = []
-
         name = self.name
         url = self.url
         content = Utils.getUrl(url)
@@ -670,7 +667,7 @@ class tvRai3(Screen):
 class tvRai4(Screen):
     def __init__(self, session, name, url):
         self.session = session
-        skin = skin_path + 'settings.xml'
+        skin = os.path.join(skin_path, 'settings.xml')
         with open(skin, 'r') as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
@@ -687,7 +684,6 @@ class tvRai4(Screen):
         self['key_yellow'] = Button(_(''))
         self['key_yellow'].hide()
         self.timer = eTimer()
-
         if Utils.DreamOS():
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
@@ -725,7 +721,6 @@ class tvRai4(Screen):
                 url3 = url3
                 self.names.append(name)
                 self.urls.append(url3)
-
         except Exception as e:
             print('error: ', str(e))
         self['info'].setText(_('Please select ...'))
@@ -821,7 +816,6 @@ class TvInfoBarShowHide():
 
     def startHideTimer(self):
         if self.__state == self.STATE_SHOWN and not self.__locked:
-            # self.hideTimer.stop()
             idx = config.usage.infobar_timeout.index
             if idx:
                 self.hideTimer.start(idx * 1500, True)
@@ -901,7 +895,7 @@ class Playstream1(Screen):
                                                              # 'instantRecord': self.runRec,
                                                              # 'ShortRecord': self.runRec,
                                                              'ok': self.okClicked}, -2)
-        self.name1 = name
+        self.name1 = Utils.cleanName(name)
         self.url = url
         print('In Playstream2 self.url =', url)
         self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -996,7 +990,7 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
     STATE_PAUSED = 2
     ENABLE_RESUME_SUPPORT = True
     ALLOW_SUSPEND = True
-    screen_timeout = 4000
+    screen_timeout = 5000
 
     def __init__(self, session, name, url):
         global streaml
@@ -1089,7 +1083,7 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
     def slinkPlay(self):
         ref = str(self.url)
         ref = ref.replace(':', '%3a').replace(' ', '%20')
-        print('final reference:   ', ref)
+        print('final reference: 1', ref)
         sref = eServiceReference(ref)
         sref.setName(self.name)
         self.session.nav.stopService()
@@ -1110,12 +1104,11 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         global streaml
         from itertools import cycle, islice
         self.servicetype = '4097'
-        # self.servicetype = str(config.plugins.revolution.services.value)
         print('servicetype1: ', self.servicetype)
         url = str(self.url)
-        # if str(os.path.splitext(url)[-1]) == ".m3u8":
-            # if self.servicetype == "1":
-                # self.servicetype = "4097"
+        if str(os.path.splitext(url)[-1]) == ".m3u8":
+            if self.servicetype == "1":
+                self.servicetype = "4097"
         currentindex = 0
         streamtypelist = ["4097"]
         # if "youtube" in str(self.url):
