@@ -4,7 +4,7 @@
 '''
 ****************************************
 *        coded by Lululla              *
-*             02/08/2022               *
+*             02/09/2023               *
 *       Skin by MMark                  *
 ****************************************
 #--------------------#
@@ -14,10 +14,12 @@ from __future__ import print_function
 # from Components.Pixmap import Pixmap
 from . import Utils
 from . import html_conv
+import codecs
+from Components.AVSwitch import AVSwitch
 try:
-    from Components.AVSwitch import eAVSwitch
-except Exception:
-    from Components.AVSwitch import iAVSwitch as eAVSwitch
+    from Components.AVSwitch import iAVSwitch
+except:
+    from enigma import eAVSwitch
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Label import Label
@@ -165,6 +167,7 @@ def returnIMDB(text_clear):
         text_clear = html_conv.html_unescape(text_clear)
         _session.open(MessageBox, text_clear, MessageBox.TYPE_INFO)
         return True
+    return False
 
 
 '''
@@ -176,7 +179,7 @@ class tgrRai(Screen):
     def __init__(self, session):
         self.session = session
         skin = os.path.join(skin_path, 'settings.xml')
-        with open(skin, 'r') as f:
+        with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
@@ -269,7 +272,7 @@ class tgrRai2(Screen):
     def __init__(self, session, name, url):
         self.session = session
         skin = os.path.join(skin_path, 'settings.xml')
-        with open(skin, 'r') as f:
+        with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
@@ -330,7 +333,7 @@ class tgrRai2(Screen):
                 # pic = image
                 url = url1
                 name = html_conv.html_unescape(name)
-                self.names.append(name)
+                self.names.append(str(name))
                 self.urls.append(url)
                 # self.pics.append(pic)
             self['info'].setText(_('Please select ...'))
@@ -358,7 +361,7 @@ class tgrRai3(Screen):
     def __init__(self, session, name, url):
         self.session = session
         skin = os.path.join(skin_path, 'settings.xml')
-        with open(skin, 'r') as f:
+        with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
@@ -422,7 +425,7 @@ class tgrRai3(Screen):
                 # pic = image
                 url = url1
                 name = html_conv.html_unescape(name)
-                self.names.append(name)
+                self.names.append(str(name))
                 self.urls.append(url)
                 # self.pics.append(pic)
             self['info'].setText(_('Please select ...'))
@@ -447,7 +450,7 @@ class tvRai2(Screen):
     def __init__(self, session, name, url):
         self.session = session
         skin = os.path.join(skin_path, 'settings.xml')
-        with open(skin, 'r') as f:
+        with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
@@ -524,7 +527,7 @@ class tvRai2(Screen):
                     # url3 = item.split("###")[1]
                 print('name ', name)
                 print('url3 ', url3)
-                self.names.append(name)
+                self.names.append(str(name))
                 self.urls.append(url3)
                 # i = i+1
                 # # ################
@@ -581,7 +584,7 @@ class tvRai3(Screen):
     def __init__(self, session, name, url):
         self.session = session
         skin = os.path.join(skin_path, 'settings.xml')
-        with open(skin, 'r') as f:
+        with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
@@ -629,7 +632,7 @@ class tvRai3(Screen):
                     print("getVideos5 name =", name)
                     print("getVideos5 url =", url)
                     name = html_conv.html_unescape(name)
-                    self.names.append(name)
+                    self.names.append(str(name))
                     self.urls.append(url)
         except Exception as e:
             print('error: ', str(e))
@@ -671,7 +674,7 @@ class tvRai4(Screen):
     def __init__(self, session, name, url):
         self.session = session
         skin = os.path.join(skin_path, 'settings.xml')
-        with open(skin, 'r') as f:
+        with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
         self.setup_title = ('tvRaiPreview')
         Screen.__init__(self, session)
@@ -722,7 +725,7 @@ class tvRai4(Screen):
                 url3 = "http://www.raiplay.it/video/" + url2
                 name = html_conv.html_unescape(name)
                 url3 = url3
-                self.names.append(name)
+                self.names.append(str(name))
                 self.urls.append(url3)
         except Exception as e:
             print('error: ', str(e))
@@ -868,7 +871,7 @@ class Playstream1(Screen):
         _session = session
 
         skin = os.path.join(skin_path, 'Playstream1.xml')
-        with open(skin, 'r') as f:
+        with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
 
         self.setup_title = ('TiVuDream')
@@ -1041,34 +1044,34 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         return
 
     def getAspect(self):
-        return eAVSwitch().getAspectRatioSetting()
+        try:
+            aspect = iAVSwitch.getAspectRatioSetting()
+        except:
+            aspect = eAVSwitch.getAspectRatioSetting()
+        return aspect
 
     def getAspectString(self, aspectnum):
-        return {
-            0: '4:3 Letterbox',
-            1: '4:3 PanScan',
-            2: '16:9',
-            3: '16:9 always',
-            4: '16:10 Letterbox',
-            5: '16:10 PanScan',
-            6: '16:9 Letterbox'
-        }[aspectnum]
+        return {0: '4:3 Letterbox',
+                1: '4:3 PanScan',
+                2: '16:9',
+                3: '16:9 always',
+                4: '16:10 Letterbox',
+                5: '16:10 PanScan',
+                6: '16:9 Letterbox'}[aspectnum]
 
     def setAspect(self, aspect):
-        map = {
-            0: '4_3_letterbox',
-            1: '4_3_panscan',
-            2: '16_9',
-            3: '16_9_always',
-            4: '16_10_letterbox',
-            5: '16_10_panscan',
-            6: '16_9_letterbox'
-        }
+        map = {0: '4_3_letterbox',
+               1: '4_3_panscan',
+               2: '16_9',
+               3: '16_9_always',
+               4: '16_10_letterbox',
+               5: '16_10_panscan',
+               6: '16_9_letterbox'}
         config.av.aspectratio.setValue(map[aspect])
         try:
-            eAVSwitch().setAspectRatio(aspect)
+            iAVSwitch.setAspectRatio(aspect)
         except:
-            pass
+            eAVSwitch.setAspectRatio(aspect)
 
     def av(self):
         temp = int(self.getAspect())
