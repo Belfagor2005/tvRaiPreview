@@ -34,8 +34,8 @@ from Components.MultiContent import MultiContentEntryText
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
-from Screens.InfoBar import InfoBar
-from Screens.InfoBar import MoviePlayer
+# from Screens.InfoBar import InfoBar
+# from Screens.InfoBar import MoviePlayer
 from Screens.InfoBarGenerics import InfoBarNotifications
 from Screens.InfoBarGenerics import InfoBarSeek, InfoBarAudioSelection
 from Screens.InfoBarGenerics import InfoBarSubtitleSupport, InfoBarMenu
@@ -49,6 +49,7 @@ from enigma import eListboxPythonMultiContent
 from enigma import eServiceReference
 from enigma import eTimer
 from enigma import gFont
+from enigma import getDesktop
 from enigma import iPlayableService
 from enigma import loadPNG
 import os
@@ -107,34 +108,41 @@ pngl = os.path.join(plugin_path, "res/pics/plugin.png")
 pngs = os.path.join(plugin_path, "res/pics/setting.png")
 desc_plugin = '..:: TiVu Rai Preview by Lululla %s ::.. ' % currversion
 name_plugin = 'TiVu Rai Preview'
-
 skin_path = os.path.join(plugin_path, "res/skins/hd/")
-if Utils.isFHD():
-    skin_path = os.path.join(plugin_path, "res/skins/fhd/")
-if Utils.DreamOS():
-    skin_path = os.path.join(skin_path, "dreamOs/")
+screenwidth = getDesktop(0).size()
+if screenwidth.width() == 1920:
+    skin_path = plugin_path + '/res/skins/fhd/'
+if screenwidth.width() == 2560:
+    skin_path = plugin_path + '/res/skins/uhd/'
+if os.path.exists('/var/lib/dpkg/info'):
+    skin_path = skin_path + 'dreamOs/'
 
 
 class SetList(MenuList):
     def __init__(self, list):
         MenuList.__init__(self, list, True, eListboxPythonMultiContent)
-        if Utils.isFHD():
+        if screenwidth.width() == 2560:
+            self.l.setFont(0, gFont('Regular', 48))
+            self.l.setItemHeight(56)
+        elif screenwidth.width() == 1920:
+            self.l.setFont(0, gFont('Regular', 30))
             self.l.setItemHeight(50)
-            textfont = int(30)
-            self.l.setFont(0, gFont('Regular', textfont))
         else:
-            self.l.setItemHeight(30)
-            textfont = int(24)
-            self.l.setFont(0, gFont('Regular', textfont))
+            self.l.setFont(0, gFont('Regular', 24))
+            self.l.setItemHeight(45)
 
 
 def OneSetListEntry(name):
     res = [name]
-    if Utils.isFHD():
+    pngx = resolveFilename(SCOPE_PLUGINS, "Extensions/{}/res/pics/setting.png".format('tvRaiPreview'))  # ico1_path
+    if screenwidth.width() == 2560:
+        res.append(MultiContentEntryPixmapAlphaTest(pos=(10, 15), size=(40, 40), png=loadPNG(pngx)))
+        res.append(MultiContentEntryText(pos=(80, 0), size=(2000, 60), font=0, text=name, color=0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
+    elif screenwidth.width() == 1920:
         res.append(MultiContentEntryPixmapAlphaTest(pos=(5, 5), size=(40, 40), png=loadPNG(pngx)))
         res.append(MultiContentEntryText(pos=(70, 0), size=(1000, 50), font=0, text=name, color=0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     else:
-        res.append(MultiContentEntryPixmapAlphaTest(pos=(3, 3), size=(30, 30), png=loadPNG(pngx)))
+        res.append(MultiContentEntryPixmapAlphaTest(pos=(3, 10), size=(40, 40), png=loadPNG(pngx)))
         res.append(MultiContentEntryText(pos=(50, 0), size=(500, 50), font=0, text=name, color=0xa6d1fe, flags=RT_HALIGN_LEFT | RT_VALIGN_CENTER))
     return res
 
@@ -1128,8 +1136,8 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
             # streamtypelist.append("5001")
         # if os.path.exists("/usr/bin/exteplayer3"):
             # streamtypelist.append("5002")
-        if os.path.exists("/usr/bin/apt-get"):
-            streamtypelist.append("8193")
+        # if os.path.exists("/usr/bin/apt-get"):
+            # streamtypelist.append("8193")
         for index, item in enumerate(streamtypelist, start=0):
             if str(item) == str(self.servicetype):
                 currentindex = index
