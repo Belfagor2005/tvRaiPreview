@@ -4,14 +4,13 @@
 '''
 ****************************************
 *        coded by Lululla              *
-*             02/09/2023               *
+*             01/10/2023               *
 *       Skin by MMark                  *
 ****************************************
 #--------------------#
 Info http://t.me/tivustream
 '''
 from __future__ import print_function
-# from Components.Pixmap import Pixmap
 from . import Utils
 from . import html_conv
 import codecs
@@ -100,7 +99,7 @@ else:
     ssl._create_default_https_context = _create_unverified_https_context
 
 
-currversion = '1.2'
+currversion = '1.3'
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview'
 pluglogo = os.path.join(plugin_path, "res/pics/logo.png")
 pngx = os.path.join(plugin_path, "res/pics/plugins.png")
@@ -835,6 +834,7 @@ class TvInfoBarShowHide():
 
     def startHideTimer(self):
         if self.__state == self.STATE_SHOWN and not self.__locked:
+            self.hideTimer.stop()
             idx = config.usage.infobar_timeout.index
             if idx:
                 self.hideTimer.start(idx * 1500, True)
@@ -887,7 +887,7 @@ class Playstream1(Screen):
         with codecs.open(skin, "r", encoding="utf-8") as f:
             self.skin = f.read()
 
-        self.setup_title = ('TiVuDream')
+        self.setup_title = ('Select Player Stream')
         self.setTitle(desc_plugin)
         self.list = []
         self['list'] = SetList([])
@@ -914,7 +914,7 @@ class Playstream1(Screen):
                                                              # 'instantRecord': self.runRec,
                                                              # 'ShortRecord': self.runRec,
                                                              'ok': self.okClicked}, -2)
-        self.name1 = Utils.cleanName(name)
+        self.name = Utils.cleanName(name)
         self.url = url
         print('In Playstream2 self.url =', url)
         self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -935,7 +935,7 @@ class Playstream1(Screen):
     def okClicked(self):
         idx = self['list'].getSelectionIndex()
         if idx is not None or idx != -1:
-            self.name = self.names[idx]
+            self.name = self.name
             self.url = self.urls[idx]
             if idx == 0:
                 print('In playVideo url D=', self.url)
@@ -985,8 +985,7 @@ class Playstream1(Screen):
 
     def play2(self):
         self['info'].setText(self.name)
-        url = self.url
-        url = url.replace(':', '%3a')
+        url = self.url.replace(':', '%3a')
         print('In url =', url)
         ref = '4097:0:1:0:0:0:0:0:0:0:' + url
         sref = eServiceReference(ref)
@@ -1012,15 +1011,15 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
     screen_timeout = 5000
 
     def __init__(self, session, name, url):
-        global streaml
-
+        global streaml, _session
         Screen.__init__(self, session)
         self.session = session
-        global _session
         _session = session
         self.skinName = 'MoviePlayer'
-
         streaml = False
+        
+
+        
         InfoBarMenu.__init__(self)
         InfoBarNotifications.__init__(self)
         InfoBarBase.__init__(self, steal_current_service=True)
@@ -1047,7 +1046,7 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         self.service = None
         InfoBarSeek.__init__(self, actionmap='InfobarSeekActions')
         self.url = url
-        self.name = name
+        self.name = html_conv.html_unescape(name)
         self.state = self.STATE_PLAYING
         self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
         if '8088' in str(self.url):
