@@ -16,11 +16,6 @@ from . import html_conv
 import codecs
 from Components.AVSwitch import AVSwitch
 try:
-    from Components.AVSwitch import iAVSwitch
-except Exception as e:
-    print(e)
-
-try:
     from enigma import eAVSwitch
 except Exception as e:
     print(e)
@@ -242,24 +237,24 @@ class tgrRai(Screen):
         self.names.append("RUBRICHE")
         self.urls.append("http://www.tgr.rai.it/dl/rai24/tgr/rubriche/mhp/list.xml")
         self.pics.append("http://www.tgr.rai.it/dl/tgr/mhp/immagini/rubriche.png")
-        self.names.append("Film")
-        self.urls.append("http://www.raiplay.it/film/")
-        self.pics.append(pngx)
-        self.names.append("Serietv")
-        self.urls.append("http://www.raiplay.it/serietv/")
-        self.pics.append(pngx)
-        self.names.append("Fiction")
-        self.urls.append("http://www.raiplay.it/fiction/")
-        self.pics.append(pngx)
-        self.names.append("Documentari")
-        self.urls.append("http://www.raiplay.it/documentari/")
-        self.pics.append(pngx)
-        self.names.append("Bambini")
-        self.urls.append("http://www.raiplay.it/bambini/")
-        self.pics.append(pngx)
-        self.names.append("Teen")
-        self.urls.append("http://www.raiplay.it/teen/")
-        self.pics.append(pngx)
+        # self.names.append("Film")
+        # self.urls.append("http://www.raiplay.it/film/")
+        # self.pics.append(pngx)
+        # self.names.append("Serietv")
+        # self.urls.append("http://www.raiplay.it/serietv/")
+        # self.pics.append(pngx)
+        # self.names.append("Fiction")
+        # self.urls.append("http://www.raiplay.it/fiction/")
+        # self.pics.append(pngx)
+        # self.names.append("Documentari")
+        # self.urls.append("http://www.raiplay.it/documentari/")
+        # self.pics.append(pngx)
+        # self.names.append("Bambini")
+        # self.urls.append("http://www.raiplay.it/bambini/")
+        # self.pics.append(pngx)
+        # self.names.append("Teen")
+        # self.urls.append("http://www.raiplay.it/teen/")
+        # self.pics.append(pngx)
         showlist(self.names, self['text'])
         self['info'].setText(_('Please select ...'))
         self['key_green'].show()
