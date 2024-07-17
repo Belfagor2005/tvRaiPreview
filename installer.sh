@@ -1,16 +1,16 @@
 #!/bin/bash
-## setup command=wget -q "--no-check-certificate" https://raw.githubusercontent.com/Belfagor2005/tvDream/main/installer.sh -O - | /bin/sh
 
+## setup command=wget -q "--no-check-certificate" https://raw.githubusercontent.com/Belfagor2005/tvRaiPreview/main/installer.sh -O - | /bin/sh
 ## Only This 2 lines to edit with new version ######
 version='1.4'
 changelog='\nAdd Live Upgrade\nFix screen'
 ##############################################################
-TMPPATH=/tmp/tvDream-main
+TMPPATH=/tmp/tvRaiPreview-main
 FILEPATH=/tmp/main.tar.gz
 
 if [ ! -d /usr/lib64 ]; then
-	PLUGINPATH=/usr/lib/enigma2/python/Plugins/Extensions/tvDream
-	PLUGINPATH=/usr/lib64/enigma2/python/Plugins/Extensions/tvDream
+	PLUGINPATH=/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview
+	PLUGINPATH=/usr/lib64/enigma2/python/Plugins/Extensions/tvRaiPreview
 fi
 
 ## check depends packges
@@ -83,9 +83,9 @@ if [ $OSTYPE != "DreamOs" ]; then
 fi
 sleep 2
 
-wget --no-check-certificate --no-cache --no-dns-cache 'https://github.com/Belfagor2005/tvDream/archive/refs/heads/main.tar.gz'
+wget --no-check-certificate --no-cache --no-dns-cache 'https://github.com/Belfagor2005/tvRaiPreview/archive/refs/heads/main.tar.gz'
 tar -xzf main.tar.gz
-cp -r 'tvDream-main/usr' '/'
+cp -r 'tvRaiPreview-main/usr' '/'
 set +e
 cd
 sleep 2
@@ -101,7 +101,7 @@ sync
 echo ""
 echo ""
 echo "#########################################################"
-echo "#           tvDream Live INSTALLED SUCCESSFULLY         #"
+echo "#       tvRaiPreview Live INSTALLED SUCCESSFULLY        #"
 echo "#                developed by LULULLA                   #"
 echo "#                                                       #"
 echo "#                  https://corvoboys.org                #"
