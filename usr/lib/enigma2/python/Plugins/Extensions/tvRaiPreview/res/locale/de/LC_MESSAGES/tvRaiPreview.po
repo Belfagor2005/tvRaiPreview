@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tvdream\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-31 09:16+0100\n"
+"POT-Creation-Date: 2024-07-17 16:48+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: ))^^(( <>\n"
 "Language-Team: *\n"
@@ -10,49 +10,74 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 1.8.7\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SearchPath-0: plugin.py\n"
 
-#: plugin.py:273 plugin.py:340 plugin.py:440
-msgid "Getting the list, please wait ..."
-msgstr "die Liste bekommen , bitte warten ..."
+#: plugin.py:200 plugin.py:367 plugin.py:456 plugin.py:544 plugin.py:678
+#: plugin.py:768
+msgid "Loading data... Please wait"
+msgstr ""
 
-#: plugin.py:274 plugin.py:341
+#: plugin.py:201 plugin.py:368 plugin.py:457 plugin.py:961
 msgid "Select"
 msgstr "Wählen"
 
-#: plugin.py:275 plugin.py:345 plugin.py:442
+#: plugin.py:202 plugin.py:369 plugin.py:458 plugin.py:546 plugin.py:680
+#: plugin.py:770 plugin.py:960
 msgid "Back"
 msgstr "Zurück"
 
-#: plugin.py:368 plugin.py:466
-msgid "Try again later ..."
+#: plugin.py:204
+msgid "Update"
 msgstr ""
 
-#: plugin.py:406 plugin.py:503
+#: plugin.py:261
+#, python-format
+msgid ""
+"New version %s is available\n"
+"\n"
+"Changelog: %s\n"
+"\n"
+"Press info_long or yellow_long button to start force updating."
+msgstr ""
+
+#: plugin.py:266
+#, python-format
+msgid ""
+"New version %s is available.\n"
+"\n"
+"Changelog: %s \n"
+"\n"
+"Do you want to install it now?"
+msgstr ""
+
+#: plugin.py:268
+msgid "Congrats! You already have the latest version..."
+msgstr ""
+
+#: plugin.py:278
+#, python-format
+msgid "Do you want to install update ( %s ) now?"
+msgstr ""
+
+#: plugin.py:287
+msgid "Update Aborted!"
+msgstr ""
+
+#: plugin.py:335 plugin.py:422 plugin.py:513 plugin.py:635 plugin.py:721
+#: plugin.py:814
 msgid "Please select ..."
 msgstr "Bitte auswählen ..."
 
-#: plugin.py:441
+#: plugin.py:545 plugin.py:679 plugin.py:769
 msgid "Play"
 msgstr "Play"
 
-#: plugin.py:532
-msgid "Nothing ..."
-msgstr "Nichts ..."
+#~ msgid "Getting the list, please wait ..."
+#~ msgstr "die Liste bekommen , bitte warten ..."
 
-#: plugin.py:621
-msgid "tvRaiPreview"
-msgstr ""
-
-#: plugin.py:629
-#, python-format
-msgid "..:: TiVu Rai Preview by Lululla %s ::.. "
-msgstr ""
-
-#: plugin.py:630
-msgid "TiVuRaiPreview"
-msgstr ""
+#~ msgid "Nothing ..."
+#~ msgstr "Nichts ..."

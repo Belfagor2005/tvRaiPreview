@@ -56,7 +56,6 @@ _ESCAPE_DICT = {
                 }
 
 
-
 def ensure_str(s, encoding='utf-8', errors='strict'):
     """Coerce *s* to `str`.
 

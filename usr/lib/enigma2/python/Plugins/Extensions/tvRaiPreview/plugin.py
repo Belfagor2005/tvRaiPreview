@@ -11,46 +11,50 @@
 Info http://t.me/tivustream
 '''
 from __future__ import print_function
+from . import _
 from . import Utils
 from . import html_conv
-import codecs
+from .Console import Console as xConsole
+
 from Components.AVSwitch import AVSwitch
-try:
-    from enigma import eAVSwitch
-except Exception as e:
-    print(e)
 from Components.ActionMap import ActionMap
 from Components.Button import Button
 from Components.Label import Label
 from Components.MenuList import MenuList
-from Components.MultiContent import MultiContentEntryPixmapAlphaTest
-from Components.MultiContent import MultiContentEntryText
-from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
+from Components.MultiContent import (MultiContentEntryPixmapAlphaTest, MultiContentEntryText)
+from Components.ServiceEventTracker import (ServiceEventTracker, InfoBarBase)
 from Components.config import config
 from Plugins.Plugin import PluginDescriptor
-# from Screens.InfoBar import InfoBar
-# from Screens.InfoBar import MoviePlayer
-from Screens.InfoBarGenerics import InfoBarNotifications
-from Screens.InfoBarGenerics import InfoBarSeek, InfoBarAudioSelection
-from Screens.InfoBarGenerics import InfoBarSubtitleSupport, InfoBarMenu
+from Screens.InfoBarGenerics import (
+    InfoBarSubtitleSupport,
+    InfoBarSeek,
+    InfoBarAudioSelection,
+    InfoBarMenu,
+    InfoBarNotifications,
+)
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
-from Tools.Directories import SCOPE_PLUGINS
-from Tools.Directories import resolveFilename
-from enigma import RT_HALIGN_LEFT
-from enigma import RT_VALIGN_CENTER
-from enigma import eListboxPythonMultiContent
-from enigma import eServiceReference
-from enigma import eTimer
-from enigma import gFont
-from enigma import getDesktop
-from enigma import iPlayableService
-from enigma import loadPNG
+from Tools.Directories import (SCOPE_PLUGINS, resolveFilename)
+from enigma import (
+    RT_VALIGN_CENTER,
+    RT_HALIGN_LEFT,
+    eTimer,
+    eListboxPythonMultiContent,
+    eServiceReference,
+    iPlayableService,
+    gFont,
+    loadPNG,
+    getDesktop,
+)
+from datetime import datetime
+import codecs
 import os
 import re
 import six
 import ssl
 import sys
+import json
+
 global skin_path, pngx, pngl, pngs
 
 PY3 = False
@@ -59,10 +63,8 @@ print('Py3: ', PY3)
 
 if PY3:
     from urllib.request import urlopen
-    # from urllib.request import Request
     PY3 = True
 else:
-    # from urllib2 import Request
     from urllib2 import urlopen
 
 if sys.version_info >= (2, 7, 9):
@@ -94,7 +96,7 @@ else:
     ssl._create_default_https_context = _create_unverified_https_context
 
 
-currversion = '1.3'
+currversion = '1.4'
 plugin_path = '/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview'
 pluglogo = os.path.join(plugin_path, "res/pics/logo.png")
 pngx = os.path.join(plugin_path, "res/pics/plugins.png")
@@ -110,6 +112,8 @@ if screenwidth.width() == 2560:
     skin_path = plugin_path + '/res/skins/uhd/'
 if os.path.exists('/var/lib/dpkg/info'):
     skin_path = skin_path + 'dreamOs/'
+installer_url = 'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL0JlbGZhZ29yMjAwNS90dkRyZWFtL21haW4vaW5zdGFsbGVyLnNo'
+developer_url = 'aHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9CZWxmYWdvcjIwMDUvdHZEcmVhbQ=='
 
 
 class SetList(MenuList):
@@ -177,11 +181,6 @@ def returnIMDB(text_clear):
     return False
 
 
-'''
-tgrRai start
-'''
-
-
 class tgrRai(Screen):
     def __init__(self, session):
         self.session = session
@@ -197,22 +196,89 @@ class tgrRai(Screen):
         self['key_green'] = Button(_('Select'))
         self['key_red'] = Button(_('Back'))
         self['key_green'].hide()
-        self['key_yellow'] = Button(_(''))
-        self['key_yellow'].hide()
-        self.timer = eTimer()
-
-        if Utils.DreamOS():
-            self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
-        else:
-            self.timer.callback.append(self._gotPageLoad)
-        self.timer.start(1500, True)
+        self['key_yellow'] = Button(_('Update'))
+        # self['key_yellow'].hide()
         self['title'] = Label(name_plugin)
+        self.Update = False
         self['actions'] = ActionMap(['OkCancelActions',
                                      'ColorActions',
+                                     'HotkeyActions',
+                                     'InfobarEPGActions',
+                                     'ChannelSelectBaseActions',
                                      'DirectionActions'], {'ok': self.okRun,
+                                                           'yellow': self.update_me,  # update_me,
+                                                           'yellow_long': self.update_dev,
+                                                           'info_long': self.update_dev,
+                                                           'infolong': self.update_dev,
+                                                           'showEventInfoPlugin': self.update_dev,
                                                            'green': self.okRun,
-                                                           'red': self.exit,
-                                                           'cancel': self.exit}, -2)
+                                                           'cancel': self.closerm,
+                                                           'red': self.closerm}, -1)
+        self.timer = eTimer()
+        if os.path.exists('/var/lib/dpkg/status'):
+            self.timer_conn = self.timer.timeout.connect(self.check_vers)
+        else:
+            self.timer.callback.append(self.check_vers)
+        self.timer.start(500, 1)
+        self.onLayoutFinish.append(self._gotPageLoad)
+
+    def check_vers(self):
+        remote_version = '0.0'
+        remote_changelog = ''
+        req = Utils.Request(Utils.b64decoder(installer_url), headers={'User-Agent': 'Mozilla/5.0'})
+        page = Utils.urlopen(req).read()
+        if PY3:
+            data = page.decode("utf-8")
+        else:
+            data = page.encode("utf-8")
+        if data:
+            lines = data.split("\n")
+            for line in lines:
+                if line.startswith("version"):
+                    remote_version = line.split("=")
+                    remote_version = line.split("'")[1]
+                if line.startswith("changelog"):
+                    remote_changelog = line.split("=")
+                    remote_changelog = line.split("'")[1]
+                    break
+        self.new_version = remote_version
+        self.new_changelog = remote_changelog
+        # if currversion < remote_version:
+        if float(currversion) < float(remote_version):
+            self.Update = True
+            # self['key_yellow'].show()
+            # self['key_green'].show()
+            self.session.open(MessageBox, _('New version %s is available\n\nChangelog: %s\n\nPress info_long or yellow_long button to start force updating.') % (self.new_version, self.new_changelog), MessageBox.TYPE_INFO, timeout=5)
+        # self.update_me()
+
+    def update_me(self):
+        if self.Update is True:
+            self.session.openWithCallback(self.install_update, MessageBox, _("New version %s is available.\n\nChangelog: %s \n\nDo you want to install it now?") % (self.new_version, self.new_changelog), MessageBox.TYPE_YESNO)
+        else:
+            self.session.open(MessageBox, _("Congrats! You already have the latest version..."),  MessageBox.TYPE_INFO, timeout=4)
+
+    def update_dev(self):
+        try:
+            req = Utils.Request(Utils.b64decoder(developer_url), headers={'User-Agent': 'Mozilla/5.0'})
+            page = Utils.urlopen(req).read()
+            data = json.loads(page)
+            remote_date = data['pushed_at']
+            strp_remote_date = datetime.strptime(remote_date, '%Y-%m-%dT%H:%M:%SZ')
+            remote_date = strp_remote_date.strftime('%Y-%m-%d')
+            self.session.openWithCallback(self.install_update, MessageBox, _("Do you want to install update ( %s ) now?") % (remote_date), MessageBox.TYPE_YESNO)
+        except Exception as e:
+            print('error xcons:', e)
+
+    def install_update(self, answer=False):
+        if answer:
+            cmd1 = 'wget -q "--no-check-certificate" ' + Utils.b64decoder(installer_url) + ' -O - | /bin/sh'
+            self.session.open(xConsole, 'Upgrading...', cmdlist=[cmd1], finishedCallback=self.myCallback, closeOnSuccess=False)
+        else:
+            self.session.open(MessageBox, _("Update Aborted!"),  MessageBox.TYPE_INFO, timeout=3)
+
+    def myCallback(self, result=None):
+        print('result:', result)
+        return
 
     def _gotPageLoad(self):
         self.names = []
@@ -263,14 +329,12 @@ class tgrRai(Screen):
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
-        # print('name : ', name)
-        # print('url:  ', url)
         if 'tgr' in url.lower():
             self.session.open(tgrRai2, name, url)
         else:
             self.session.open(tvRai2, name, url)
 
-    def exit(self):
+    def closerm(self):
         Utils.deletetmp()
         self.close()
 
@@ -292,11 +356,11 @@ class tgrRai2(Screen):
         self['key_green'] = Button(_('Select'))
         self['key_red'] = Button(_('Back'))
         self['key_green'].hide()
-        self['key_yellow'] = Button(_(''))
+        self['key_yellow'] = Button()
         self['key_yellow'].hide()
         self.timer = eTimer()
         self.timer.start(1500, True)
-        if Utils.DreamOS():
+        if os.path.exists('/var/lib/dpkg/info'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -352,7 +416,6 @@ class tgrRai2(Screen):
 
     def okRun(self):
         i = len(self.names)
-        print('iiiiii= ', i)
         if i < 1:
             return
         idx = self["text"].getSelectionIndex()
@@ -381,11 +444,10 @@ class tgrRai3(Screen):
         self['key_green'] = Button(_('Select'))
         self['key_red'] = Button(_('Back'))
         self['key_green'].hide()
-        self['key_yellow'] = Button(_(''))
+        self['key_yellow'] = Button()
         self['key_yellow'].hide()
         self.timer = eTimer()
-
-        if Utils.DreamOS():
+        if os.path.exists('/var/lib/dpkg/info'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -444,7 +506,6 @@ class tgrRai3(Screen):
 
     def okRun(self):
         i = len(self.names)
-        print('iiiiii= ', i)
         if i < 1:
             return
         idx = self["text"].getSelectionIndex()
@@ -470,10 +531,10 @@ class tvRai2(Screen):
         self['key_green'] = Button(_('Play'))
         self['key_red'] = Button(_('Back'))
         self['key_green'].hide()
-        self['key_yellow'] = Button(_(''))
+        self['key_yellow'] = Button()
         self['key_yellow'].hide()
         self.timer = eTimer()
-        if Utils.DreamOS():
+        if os.path.exists('/var/lib/dpkg/info'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -494,8 +555,7 @@ class tvRai2(Screen):
         content = Utils.getUrl(url)
         if PY3:
             content = six.ensure_str(content)
-        print(content)
-        items = []
+        # items = []
         # i = 0
         # while i < 10:
         try:
@@ -506,9 +566,6 @@ class tvRai2(Screen):
             # f=open(filex,"w")
             # f.write("#EXTM3U\n")
             for url, name in match:
-                print('name1 ', name)
-                print('url1 ', url)
-
                 url1 = "http://www.raiplay.it" + url + '.html'
                 content2 = Utils.getUrl(url1)
                 # if PY3:
@@ -522,7 +579,6 @@ class tvRai2(Screen):
                 match2 = re.compile(regexcat2, re.DOTALL).findall(content2)
                 url2 = match2[0].replace("json", "html")
                 url3 = "http://www.raiplay.it/video/" + url2  # (url2.replace('json', 'html'))
-                print('url3 ', url3)
                 name = html_conv.html_unescape(name)
                 name = name.replace('-', '').replace('RaiPlay', '')
                 # item = name + "###" + url3
@@ -532,8 +588,6 @@ class tvRai2(Screen):
                 # if item not in items:
                     # name = item.split("###")[0]
                     # url3 = item.split("###")[1]
-                print('name ', name)
-                print('url3 ', url3)
                 self.names.append(str(name))
                 self.urls.append(url3)
                 # i = i+1
@@ -562,14 +616,11 @@ class tvRai2(Screen):
 
     def okRun(self):
         i = len(self.names)
-        print('iiiiii= ', i)
         if i < 1:
             return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
-        print('nameok : ', name)
-        print('urlok:  ', url)
         try:
             from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
             ydl_opts = {'format': 'best'}
@@ -579,9 +630,7 @@ class tvRai2(Screen):
             ydl = YoutubeDL(ydl_opts)
             ydl.add_default_info_extractors()
             result = ydl.extract_info(url, download=False)
-            print ("rai result =", result)
             url = result["url"]
-            print ("rai final url =", url)
             self.session.open(Playstream1, name, url)
         except Exception as e:
             print('error tvr4 e  ', str(e))
@@ -604,10 +653,10 @@ class tvRai3(Screen):
         self['key_green'] = Button(_('Play'))
         self['key_red'] = Button(_('Back'))
         self['key_green'].hide()
-        self['key_yellow'] = Button(_(''))
+        self['key_yellow'] = Button()
         self['key_yellow'].hide()
         self.timer = eTimer()
-        if Utils.DreamOS():
+        if os.path.exists('/var/lib/dpkg/info'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -631,13 +680,9 @@ class tvRai3(Screen):
         try:
             if content.find('behaviour="list">'):
                 regexcat = '<label>(.*?)</label>.*?type="list">(.*?).html</url>'
-                print('content2 : ', content)
                 match = re.compile(regexcat, re.DOTALL).findall(content)
-                print("showContent2 match =", match)
                 for name, url in match:
                     url = "http://www.tgr.rai.it/" + url + '.html'
-                    print("getVideos5 name =", name)
-                    print("getVideos5 url =", url)
                     name = html_conv.html_unescape(name)
                     self.names.append(str(name))
                     self.urls.append(url)
@@ -649,14 +694,11 @@ class tvRai3(Screen):
 
     def okRun(self):
         i = len(self.names)
-        print('iiiiii= ', i)
         if i < 1:
             return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
-        print('nameok : ', name)
-        print('urlok:  ', url)
         try:
             if 'relinker' in url:
                 from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
@@ -667,9 +709,7 @@ class tvRai3(Screen):
                 ydl = YoutubeDL(ydl_opts)
                 ydl.add_default_info_extractors()
                 result = ydl.extract_info(url, download=False)
-                print ("rai result =", result)
                 url = result["url"]
-                print ("rai final url =", url)
                 self.session.open(Playstream1, name, url)
             else:
                 self.session.open(tvRai4, name, url)
@@ -694,10 +734,10 @@ class tvRai4(Screen):
         self['key_green'] = Button(_('Play'))
         self['key_red'] = Button(_('Back'))
         self['key_green'].hide()
-        self['key_yellow'] = Button(_(''))
+        self['key_yellow'] = Button()
         self['key_yellow'].hide()
         self.timer = eTimer()
-        if Utils.DreamOS():
+        if os.path.exists('/var/lib/dpkg/info'):
             self.timer_conn = self.timer.timeout.connect(self._gotPageLoad)
         else:
             self.timer.callback.append(self._gotPageLoad)
@@ -742,14 +782,11 @@ class tvRai4(Screen):
 
     def okRun(self):
         i = len(self.names)
-        print('iiiiii= ', i)
         if i < 1:
             return
         idx = self["text"].getSelectionIndex()
         name = self.names[idx]
         url = self.urls[idx]
-        print('nameok : ', name)
-        print('urlok:  ', url)
         try:
             # try:
             from Plugins.Extensions.tvRaiPreview.youtube_dl import YoutubeDL
@@ -762,17 +799,10 @@ class tvRai4(Screen):
             ydl = YoutubeDL(ydl_opts)
             ydl.add_default_info_extractors()
             result = ydl.extract_info(url, download=False)
-            print ("rai result =", result)
             url = result["url"]
-            print ("rai final url =", url)
             self.session.open(Playstream1, name, url)
         except Exception as e:
             print('error: ', str(e))
-
-
-'''
-rai end
-'''
 
 
 class TvInfoBarShowHide():
@@ -911,7 +941,6 @@ class Playstream1(Screen):
                                                              'ok': self.okClicked}, -2)
         self.name = Utils.cleanName(name)
         self.url = url
-        print('In Playstream2 self.url =', url)
         self.srefInit = self.session.nav.getCurrentlyPlayingServiceReference()
         self.onLayoutFinish.append(self.openTest)
 
@@ -933,30 +962,25 @@ class Playstream1(Screen):
             self.name = self.name
             self.url = self.urls[idx]
             if idx == 0:
-                print('In playVideo url D=', self.url)
                 self.play()
             elif idx == 1:
-                print('In playVideo url B=', self.url)
                 try:
                     os.remove('/tmp/hls.avi')
                 except:
                     pass
                 header = ''
                 cmd = 'python "/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/lib/hlsclient.py" "' + self.url + '" "1" "' + header + '" + &'
-                print('In playVideo cmd =', cmd)
                 os.system(cmd)
                 os.system('sleep 3')
                 self.url = '/tmp/hls.avi'
                 self.play()
             elif idx == 2:
-                print('In playVideo url A=', self.url)
                 url = self.url
                 try:
                     os.remove('/tmp/hls.avi')
                 except:
                     pass
                 cmd = 'python "/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/lib/tsclient.py" "' + url + '" "1" + &'
-                print('ts cmd = ', cmd)
                 os.system(cmd)
                 os.system('sleep 3')
                 self.url = '/tmp/hls.avi'
@@ -1012,9 +1036,6 @@ class Playstream2(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifica
         _session = session
         self.skinName = 'MoviePlayer'
         streaml = False
-        
-
-        
         InfoBarMenu.__init__(self)
         InfoBarNotifications.__init__(self)
         InfoBarBase.__init__(self, steal_current_service=True)
