@@ -48,12 +48,12 @@ from enigma import (
 )
 from datetime import datetime
 import codecs
+import json           
 import os
 import re
 import six
 import ssl
 import sys
-import json
 
 global skin_path, pngx, pngl, pngs
 
