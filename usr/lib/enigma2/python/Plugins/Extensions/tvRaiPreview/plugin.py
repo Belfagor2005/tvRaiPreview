@@ -201,7 +201,6 @@ class tgrRai(Screen):
         self['title'] = Label(name_plugin)
         self.Update = False
         self['actions'] = ActionMap(['OkCancelActions',
-                                     'ColorActions',
                                      'HotkeyActions',
                                      'InfobarEPGActions',
                                      'ChannelSelectBaseActions',
