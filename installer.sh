@@ -3,8 +3,8 @@
 ## setup command=wget -q --no-check-certificate https://raw.githubusercontent.com/Belfagor2005/tvRaiPreview/main/installer.sh -O - | /bin/sh
 
 ## Only These 2 lines to edit with new version ######
-version='1.4'
-changelog='\nAdd Live Upgrade\nFix screen'
+version='1.5'
+changelog='\nRecoded Category'
 ##############################################################
 
 TMPPATH=/tmp/tvRaiPreview-main
