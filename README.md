@@ -1,6 +1,9 @@
 tvRaiPreview
 
-Enigma2 project
+![](https://komarev.com/ghpvc/?username=Belfagor2005)
+
+
+[![Python package](https://github.com/Belfagor2005/tvRaiPreview/actions/workflows/pylint.yml/badge.svg)](https://github.com/Belfagor2005/tvRaiPreview/actions/workflows/pylint.yml)
 
 
 <img src="https://github.com/Belfagor2005/tvRaiPreview/blob/main/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/logo.png">
