@@ -1,6 +1,7 @@
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: RaiPlay\n"
+"Project-Id-Version: raiplay\n"
 "POT-Creation-Date: 2025-07-24 15:18+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -10,8 +11,9 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.6\n"
-"X-Poedit-Basepath: ../../../..\n"
+"X-Poedit-Basepath: ../..\n"
 "X-Poedit-SearchPath-0: plugin.py\n"
+"X-Poedit-SearchPath-1: search.py\n"
 
 #: plugin.py:935
 msgid "Rai Play Main"
@@ -27,7 +29,7 @@ msgstr ""
 #: plugin.py:1722 plugin.py:1776 plugin.py:1840 plugin.py:1956 plugin.py:2033
 #: plugin.py:2102 plugin.py:2206 plugin.py:2276 plugin.py:2359 plugin.py:2763
 msgid "Select"
-msgstr "Seleziona"
+msgstr ""
 
 #: plugin.py:940 plugin.py:1021 plugin.py:1075 plugin.py:1129 plugin.py:1184
 #: plugin.py:1334 plugin.py:1406 plugin.py:1468 plugin.py:1522 plugin.py:1585
@@ -35,7 +37,7 @@ msgstr "Seleziona"
 #: plugin.py:2101 plugin.py:2205 plugin.py:2277 plugin.py:2360 plugin.py:2441
 #: plugin.py:2523 plugin.py:2591 plugin.py:2762
 msgid "Back"
-msgstr "Indietro"
+msgstr ""
 
 #: plugin.py:960
 msgid "Live TV"
@@ -60,7 +62,7 @@ msgstr ""
 #: plugin.py:981 plugin.py:2247 plugin.py:2324 plugin.py:2408 plugin.py:2491
 #: plugin.py:2558 plugin.py:2631
 msgid "Please select ..."
-msgstr "Seleziona Prego ..."
+msgstr ""
 
 #: plugin.py:1002 plugin.py:1443
 msgid "Functionality not yet implemented"
@@ -79,7 +81,7 @@ msgstr ""
 
 #: plugin.py:1051 plugin.py:1105 plugin.py:1378
 msgid "Select channel"
-msgstr "Seleziona canale"
+msgstr ""
 
 #: plugin.py:1071
 msgid "Rai Play Live Radio"
@@ -91,7 +93,7 @@ msgstr ""
 
 #: plugin.py:1159
 msgid "Select date"
-msgstr "Seleziona data"
+msgstr ""
 
 #: plugin.py:1180
 #, python-format
@@ -109,7 +111,7 @@ msgstr ""
 
 #: plugin.py:1292 plugin.py:1813
 msgid "Select program"
-msgstr "Seleziona programma"
+msgstr ""
 
 #: plugin.py:1307
 msgid "Video URL not available"
@@ -141,11 +143,11 @@ msgstr ""
 
 #: plugin.py:1497
 msgid "Select block"
-msgstr "Seleziona blocco"
+msgstr ""
 
 #: plugin.py:1558 plugin.py:2009
 msgid "Select video"
-msgstr "Seleziona video"
+msgstr ""
 
 #: plugin.py:1633
 msgid "No items available"
@@ -153,7 +155,7 @@ msgstr ""
 
 #: plugin.py:1637
 msgid "Select item"
-msgstr "Seleziona item"
+msgstr ""
 
 #: plugin.py:1641
 #, python-format
@@ -174,7 +176,7 @@ msgstr ""
 
 #: plugin.py:1749
 msgid "Select letter"
-msgstr "Seleziona lettera"
+msgstr ""
 
 #: plugin.py:1912
 msgid "No seasons available"
@@ -182,7 +184,7 @@ msgstr ""
 
 #: plugin.py:1918
 msgid "Select season"
-msgstr "Seleziona stagione"
+msgstr ""
 
 #: plugin.py:2028
 msgid "Rai Play TG"
@@ -191,7 +193,7 @@ msgstr ""
 #: plugin.py:2097
 #, python-format
 msgid "TV news - %s"
-msgstr "Telegiornali - %s"
+msgstr ""
 
 #: plugin.py:2131
 msgid "Invalid category"
@@ -207,15 +209,15 @@ msgstr ""
 
 #: plugin.py:2177
 msgid "Select edition"
-msgstr "Seleziona edizione"
+msgstr ""
 
 #: plugin.py:2201
 msgid "Regional TGR"
-msgstr "TGR Regionali"
+msgstr ""
 
 #: plugin.py:2440 plugin.py:2522 plugin.py:2590
 msgid "Play"
-msgstr "Play"
+msgstr ""
 
 #: plugin.py:2818
 msgid "Error playing stream"
@@ -231,7 +233,7 @@ msgstr ""
 
 #: plugin.py:2993
 msgid "Error starting plugin"
-msgstr "Errore nell'avvio del plugin"
+msgstr ""
 
 #~ msgid "Getting the list, please wait ..."
 #~ msgstr "Ricevo l'elenco , si prega di attendere ..."
