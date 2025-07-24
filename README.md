@@ -1,7 +1,6 @@
-tvRaiPreview
-
 ![](https://komarev.com/ghpvc/?username=Belfagor2005)
 
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY_NC_SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 [![Python package](https://github.com/Belfagor2005/tvRaiPreview/actions/workflows/pylint.yml/badge.svg)](https://github.com/Belfagor2005/tvRaiPreview/actions/workflows/pylint.yml)
 
@@ -9,14 +8,51 @@ tvRaiPreview
 <img src="https://github.com/Belfagor2005/tvRaiPreview/blob/main/usr/lib/enigma2/python/Plugins/Extensions/tvRaiPreview/logo.png">
 
 
-Is a Get Free Channel list: Rai Tg3 - Regione and Other
+# Rai Play View Plugin
+## Overview
 
+Rai Play View is a plugin to browse and stream Rai Play content on compatible platforms.  
+It allows users to navigate categories, programs, and videos via Rai Play's JSON API and play streams directly.
 
+## Features
 
-No video files are stored in this repository. The repository simply contains user-submitted links to publicly available video stream URLs, which to the best of our knowledge have been intentionally made publicly by the copyright holders. If any links in these playlists infringe on your rights as a copyright holder, they may be removed by sending a pull request or opening an issue.
+- Browse Rai Play on-demand categories and genres  
+- Access detailed program information and seasons  
+- Play videos and movies seamlessly  
+- Supports subtitles and multiple video qualities (if available)  
+- Debug logging for easier troubleshooting  
+- Clean, user-friendly interface  
 
-However, note that we have no control over the destination of the link, and just removing the link from the playlist will not remove its contents from the web. Note that linking does not directly infringe copyright because no copy is made on the site providing the link, and thus this is not a valid reason to send a DMCA notice to GitHub. To remove this content from the web, you should contact the web host that's actually hosting the content (not GitHub, nor the maintainers of this repository).
+## Installation
 
-No Depository Links on server
+1. Clone or download this repository to your plugin directory.  
+2. Install dependencies if needed (e.g., `requests`).  
+3. Restart your media platform to load the plugin.
 
-www.tivustream.com
+## Usage
+
+- Navigate the Rai Play categories from the plugin menu.  
+- Select a program or season to view episodes or videos.  
+- Press OK/Select to start playback.
+
+## Development
+
+- Built in Python 3 with API integration to Rai Play JSON endpoints.  
+- Debug logs are printed in console for development assistance.  
+- Contributions welcome — please fork and submit pull requests.
+
+## License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0).  
+See the [LICENSE](LICENSE) file for details.
+
+## Credits
+
+- Developed by Lululla  
+- Inspired by Rai Play API and existing plugins  
+
+## Contact
+
+For questions or feedback, please open an issue or contact Lululla.
+
+```
