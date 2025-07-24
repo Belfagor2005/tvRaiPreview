@@ -97,13 +97,21 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-tar -xzf "$FILEPATH"
+# tar -xzf "$FILEPATH"
+mkdir -p "$TMPPATH"
+cd "$TMPPATH" || exit 1
+
+echo "Extracting only 'usr' from archive..."
+tar -xzf "$FILEPATH" --strip-components=1
+
+cp -r 'usr' '/'
+
 if [ $? -ne 0 ]; then
     echo "Failed to extract tvRaiPreview package!"
     exit 1
 fi
 
-cp -r 'tvRaiPreview-main/usr' '/'
+# cp -r 'tvRaiPreview-main/usr' '/'
 set +e
 
 # Verify installation
